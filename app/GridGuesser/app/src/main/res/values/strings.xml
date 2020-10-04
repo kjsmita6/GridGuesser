@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">GridGuesser</string>
+    <string name="enter_code">Enter Game Code</string>
+    <string name="join_game">Join Game</string>
+    <string name="create_game">Create Game</string>
+    <string name="code">Code: </string>
+    <string name="code_complete">AAAA</string>
+    <string name="rules">Rules</string>
+    <string name="rulelist">1. Rule 1\n2. Rule 2\n3. Rule 3</string>
+    <string name="back">Back</string>
 </resources>
