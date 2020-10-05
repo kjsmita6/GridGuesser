@@ -8,4 +8,9 @@
     <string name="rules">Rules</string>
     <string name="rulelist">1. Rule 1\n2. Rule 2\n3. Rule 3</string>
     <string name="back">Back</string>
+    <string name="title_subtext">A Naval Strategy Game</string>
+    <string name="active_games">Active Games</string>
+    <string name="congratulations">Congratulations</string>
+    <string name="winner">You Won!</string>
+    <string name="main_menu">To Main Menu</string>
 </resources>

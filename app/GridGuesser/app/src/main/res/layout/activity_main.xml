@@ -76,23 +76,20 @@
         android:layout_width="46dp"
         android:layout_height="46dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_options" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/imageButton2"
         android:layout_width="46dp"
         android:layout_height="46dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageButton"
-        app:srcCompat="@drawable/ic_rules" />
+        app:layout_constraintStart_toEndOf="@+id/imageButton" />
 
     <ImageButton
         android:id="@+id/imageButton3"
         android:layout_width="46dp"
         android:layout_height="46dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageButton2"
-        app:srcCompat="@drawable/ic_stats" />
+        app:layout_constraintStart_toEndOf="@+id/imageButton2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

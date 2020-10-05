@@ -10,12 +10,13 @@
         android:id="@+id/userTurn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="15dp"
         android:text="Your Turn"
         android:textSize="30dp"
-        android:padding="15dp"
-        android:gravity="center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button2"
@@ -52,7 +53,7 @@
         android:id="@+id/goToPlayer"
         android:layout_width="36dp"
         android:layout_height="61dp"
-        android:text="<"
+        android:text=">"
         app:layout_constraintBottom_toBottomOf="@+id/gameBoard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/gameBoard" />
@@ -148,60 +149,60 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button161"
+                android:id="@+id/button11"
                 android:layout_width="35dp"
                 android:layout_height="35dp" />
 
             <Button
-                android:id="@+id/button162"
+                android:id="@+id/button12"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="1" />
 
             <Button
-                android:id="@+id/button163"
+                android:id="@+id/button13"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="2" />
 
             <Button
-                android:id="@+id/button164"
+                android:id="@+id/button14"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="3" />
 
             <Button
-                android:id="@+id/button165"
+                android:id="@+id/button15"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="4" />
 
             <Button
-                android:id="@+id/button166"
+                android:id="@+id/button16"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="5" />
 
             <Button
-                android:id="@+id/button67"
+                android:id="@+id/button17"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="6" />
 
             <Button
-                android:id="@+id/button68"
+                android:id="@+id/button18"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="7" />
 
             <Button
-                android:id="@+id/button69"
+                android:id="@+id/button19"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="8" />
 
             <Button
-                android:id="@+id/button70"
+                android:id="@+id/button10"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="9" />
@@ -214,61 +215,61 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button61"
+                android:id="@+id/button21"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="A" />
 
             <Button
-                android:id="@+id/button62"
+                android:id="@+id/button22"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button63"
+                android:id="@+id/button23"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button64"
+                android:id="@+id/button24"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button65"
+                android:id="@+id/button25"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button66"
+                android:id="@+id/button26"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button67"
+                android:id="@+id/button27"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button68"
+                android:id="@+id/button28"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button69"
+                android:id="@+id/button29"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button70"
+                android:id="@+id/button20"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
@@ -281,19 +282,19 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button61"
+                android:id="@+id/button31"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="B" />
 
             <Button
-                android:id="@+id/button62"
+                android:id="@+id/button32"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button63"
+                android:id="@+id/button33"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary"
@@ -301,44 +302,44 @@
                 android:textColor="@color/colorAccent" />
 
             <Button
-                android:id="@+id/button64"
+                android:id="@+id/button34"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button65"
+                android:id="@+id/button35"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button66"
+                android:id="@+id/button36"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="X"
                 android:textColor="@color/colorAccent"/>
 
             <Button
-                android:id="@+id/button67"
+                android:id="@+id/button37"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button68"
+                android:id="@+id/button38"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button69"
+                android:id="@+id/button39"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button70"
+                android:id="@+id/button30"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
@@ -350,13 +351,13 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button61"
+                android:id="@+id/button41"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="C" />
 
             <Button
-                android:id="@+id/button62"
+                android:id="@+id/button42"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary"
@@ -364,13 +365,13 @@
                 android:textColor="@color/colorAccent" />
 
             <Button
-                android:id="@+id/button63"
+                android:id="@+id/button43"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button64"
+                android:id="@+id/button44"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary"
@@ -378,38 +379,38 @@
                 android:textColor="@color/colorAccent" />
 
             <Button
-                android:id="@+id/button65"
+                android:id="@+id/button45"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button66"
+                android:id="@+id/button46"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="X"
                 android:textColor="@color/colorAccent"/>
 
             <Button
-                android:id="@+id/button67"
+                android:id="@+id/button47"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button68"
+                android:id="@+id/button48"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button69"
+                android:id="@+id/button49"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button70"
+                android:id="@+id/button40"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
@@ -421,65 +422,65 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button61"
+                android:id="@+id/button51"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="D" />
 
             <Button
-                android:id="@+id/button62"
+                android:id="@+id/button52"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button63"
+                android:id="@+id/button53"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
 
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button64"
+                android:id="@+id/button54"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button65"
+                android:id="@+id/button55"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button66"
+                android:id="@+id/button56"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="X"
                 android:textColor="@color/colorAccent"/>
 
             <Button
-                android:id="@+id/button67"
+                android:id="@+id/button57"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button68"
+                android:id="@+id/button58"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="X"
                 android:textColor="@color/colorAccent"/>
 
             <Button
-                android:id="@+id/button69"
+                android:id="@+id/button59"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="X"
                 android:textColor="@color/colorAccent"/>
 
             <Button
-                android:id="@+id/button70"
+                android:id="@+id/button50"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
@@ -547,7 +548,7 @@
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button70"
+                android:id="@+id/button60"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="X"
@@ -561,61 +562,61 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/button71"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="F" />
 
             <Button
-                android:id="@+id/button29"
+                android:id="@+id/button72"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button30"
+                android:id="@+id/button73"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button31"
+                android:id="@+id/button74"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button32"
+                android:id="@+id/button75"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button33"
+                android:id="@+id/button76"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button34"
+                android:id="@+id/button77"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button35"
+                android:id="@+id/button78"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button36"
+                android:id="@+id/button79"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button37"
+                android:id="@+id/button70"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
@@ -628,49 +629,49 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button39"
+                android:id="@+id/button81"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="G" />
 
             <Button
-                android:id="@+id/button40"
+                android:id="@+id/button82"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button41"
+                android:id="@+id/button83"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button42"
+                android:id="@+id/button84"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button43"
+                android:id="@+id/button85"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button44"
+                android:id="@+id/button86"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button45"
+                android:id="@+id/button87"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button46"
+                android:id="@+id/button88"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary"
@@ -678,7 +679,7 @@
                 android:textColor="@color/colorAccent" />
 
             <Button
-                android:id="@+id/button47"
+                android:id="@+id/button89"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary"
@@ -686,7 +687,7 @@
                 android:textColor="@color/colorAccent" />
 
             <Button
-                android:id="@+id/button48"
+                android:id="@+id/button80"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
@@ -698,62 +699,62 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button50"
+                android:id="@+id/button91"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="H" />
 
             <Button
-                android:id="@+id/button51"
+                android:id="@+id/button92"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button52"
+                android:id="@+id/button93"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button53"
+                android:id="@+id/button94"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button54"
+                android:id="@+id/button95"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:text="X"
                 android:textColor="@color/colorAccent"/>
 
             <Button
-                android:id="@+id/button55"
+                android:id="@+id/button96"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button56"
+                android:id="@+id/button97"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button57"
+                android:id="@+id/button98"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button58"
+                android:id="@+id/button99"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
 
             <Button
-                android:id="@+id/button59"
+                android:id="@+id/button90"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:background="@color/colorPrimary" />
