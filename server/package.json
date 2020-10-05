@@ -2,15 +2,18 @@
   "name": "server",
   "version": "1.0.0",
   "description": "Server application for Grid Guesser",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "forever start -w server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
     "mysql": "^2.18.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "sqlite3": "^5.0.0",
+    "winston": "^3.3.3"
   }
 }
