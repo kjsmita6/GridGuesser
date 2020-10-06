@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".OptionsActivity" />
-        <activity android:name=".ActiveGamesActivity" />
+        <activity android:name=".activegames.ActiveGamesActivity" />
         <activity android:name=".ResultsActivity" />
         <activity android:name=".CreateGameActivity" />
         <activity android:name=".JoinActivity" />
