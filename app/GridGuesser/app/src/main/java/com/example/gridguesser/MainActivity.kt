@@ -4,7 +4,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.widget.TextView
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import com.example.gridguesser.deviceID.DeviceID
+import com.example.gridguesser.http.ServerInteractions
+
+private const val TAG = "GridGuesser"
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -12,5 +18,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         Log.d("MAIN_APP", DeviceID.getDeviceID(contentResolver))
+
+        ServerInteractions.get().serverStatus.observe(
+            this,
+            Observer { responseString ->
+                Log.d(TAG, "Response received: $responseString")
+            })
     }
 }
