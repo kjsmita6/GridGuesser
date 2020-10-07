@@ -44,7 +44,7 @@ class ServerInteractions {
         }
     }
 
-    private fun checkStatus(): LiveData<Boolean> {
+    fun checkStatus(): LiveData<Boolean> {
         val responseLiveData: MutableLiveData<Boolean> = MutableLiveData()
         val weatherRequest: Call<String> = serverAPI.getStatus()
 
@@ -60,6 +60,29 @@ class ServerInteractions {
                 response: Response<String>
             ) {
                 responseLiveData.value = true
+            }
+        })
+
+        return responseLiveData
+    }
+
+    fun newGame(title: String, id: String): LiveData<String> {
+        val responseLiveData: MutableLiveData<String> = MutableLiveData()
+        val weatherRequest: Call<String> = serverAPI.getNewGame(title, id)
+
+        weatherRequest.enqueue(object : Callback<String> {
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.e(TAG, "Failed to create new game", t)
+                responseLiveData.value = "FAILURE"
+            }
+
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                responseLiveData.value = response.body()
+                response.body()?.let { Log.d(TAG, it) }
             }
         })
 
