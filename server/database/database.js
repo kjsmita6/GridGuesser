@@ -4,7 +4,7 @@ const path = require('path');
 const Board = require('../board');
 
 const CREATE_TABLE_GAMES = 'create table if not exists games (id int(32) not null primary key, state int(1) not null, title varchar2(32) not null, code varchar2(4) not null, player1 varchar2(32) not null, player2 varchar2(32) null, player1_board varchar(2048) not null, player2_board varchar(2048) not null, foreign key(player1) references users(id), foreign key(player2) references users(id))';
-const CREATE_TABLE_USERS = 'create table if not exists users (id varchar(32) not null primary key)';
+const CREATE_TABLE_USERS = 'create table if not exists users (id varchar(32) not null primary key, username varchar(32) not null)';
 
 class Database {
     constructor(db) {
@@ -81,6 +81,12 @@ class Database {
                     });
                 }
             }
+        });
+    }
+
+    createUser(id, username, callback) {
+        this.runFirstQuery(`insert into users (id, username) values (?, ?)`, [id, username], (err, rows) => {
+            callback(err);
         });
     }
 }

@@ -5,8 +5,7 @@ const logger = util.logger
 
 const DatabaseRouter = require('./database/dbrouter');
 DatabaseRouter.initialize();
-const database = DatabaseRouter.getInstance();
-
+const database = DatabaseRouter.getInstance().db;
 
 router.get('/', (req, res) => {
     logger.silly(util.parseReq(req));
@@ -18,14 +17,14 @@ router.post('/newgame', (req, res) => {
     let code = util.generateID();
     let title = req.body.title;
     let player1 = req.body.player1;
-    database.db.createGame(title, code, player1, (err, response) => {
+    database.createGame(title, code, player1, (err, response) => {
         if (err) {
-            logger.warn(`error: ${err.message}: ${err.stack}`);
+            logger.warn(`Error creating game: ${err.message}: ${err.stack}`);
             res.statusCode = 500;
-            res.statusMessage = err.message;
+            res.json({
+                error: err.message
+            });
         } else {
-            logger.verbose('error: ' + JSON.stringify(err));
-            logger.verbose('response: ' + JSON.stringify(response));
             res.statusCode = 200;
             res.json({
                 id: response.id,
@@ -38,12 +37,27 @@ router.post('/newgame', (req, res) => {
 
 router.post('/newuser', (req, res) => {
     logger.silly(util.parseReq(req));
-    // Phone sends unique Android ID
+    let id = req.body.id;
+    let username = req.body.username;
+    database.createUser(id, username, err => {
+        if (err) {
+            logger.warn(`Error creating game: ${err.message}: ${err.stack}`);
+            res.statusCode = 500;
+            res.json({
+                error: err.message
+            });
+        } else {
+            res.statusCode = 200;
+            res.json({ 
+                error: null
+            });
+        }
+        res.end();
+    });
 });
 
-router.post('/newboard', (req, res) => {
-    logger.silly(util.parseReq(req));
-    // Create new board from what user sends, json format
+router.post('/updateboard', (req, res) => {
+    // TODO
 });
 
 module.exports = router;
