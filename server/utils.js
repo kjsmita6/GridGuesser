@@ -1,4 +1,5 @@
 const winston = require('winston');
+winston.remove(winston.transports.Console);
 
 class Util {
     static generateID() {
@@ -18,7 +19,9 @@ class Util {
                 timestamp: true,
                 level: process.argv.length == 3 ? process.argv[2] : 'info',
                 json: false,
-                format: winston.format.combine(winston.format.colorize(), winston.format.simple())
+                format: winston.format.combine(winston.format.timestamp(),
+                                                winston.format.colorize(),
+                                                winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`))
             }),
             new winston.transports.File({
                 colorize: false,
@@ -30,9 +33,9 @@ class Util {
         ]
     });
 
-    static parseReq(req) {
+    static parseReq(method, req) {
         try {
-            return `URL: ${JSON.stringify(req.url)}\nQuery: ${JSON.stringify(req.query)}\nHeaders: ${JSON.stringify(req.headers)}\nParams: ${JSON.stringify(req.params)}\nBody: ${JSON.stringify(req.body)}`;
+            return `${method}: ${JSON.stringify(req.url)}\nQuery: ${JSON.stringify(req.query)}\nHeaders: ${JSON.stringify(req.headers)}\nParams: ${JSON.stringify(req.params)}\nBody: ${JSON.stringify(req.body)}`;
         } catch (e) {
             this.logger.error(`Error parsing request -- ${e.message}: ${e.stack}`);
             return 'error parsing request';
