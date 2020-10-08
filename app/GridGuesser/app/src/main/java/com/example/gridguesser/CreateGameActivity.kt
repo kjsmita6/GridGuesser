@@ -41,7 +41,6 @@ class CreateGameActivity : AppCompatActivity() {
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "$s, $start, $count, $after")
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -64,7 +63,7 @@ class CreateGameActivity : AppCompatActivity() {
             Observer { responseString ->
                 Log.d(TAG, "Response received: $responseString, ${responseString.get("code")}")
                 codeLabel.text = getString(R.string.code_label)
-                codeField.setText(responseString.get("code").toString())
+                codeField.setText(responseString.get("code").toString().replace("\"", ""))
                 codeField.isEnabled = false
                 createGame.isEnabled = false
                 waitingText.visibility = View.VISIBLE
