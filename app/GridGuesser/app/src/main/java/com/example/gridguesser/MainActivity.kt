@@ -4,8 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.TextView
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.example.gridguesser.activegames.ActiveGamesActivity
 import com.example.gridguesser.deviceID.DeviceID
