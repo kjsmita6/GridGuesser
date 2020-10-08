@@ -1,14 +1,15 @@
 package com.example.gridguesser.http
 
+import com.google.gson.JsonObject
+import org.json.JSONObject
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.*
 
 
 interface ServerAPI {
     @GET(".")
     fun getStatus(): Call<String>
 
-    @GET("/newgame")
-    fun getNewGame(@Query("title") Title: String, @Query("player1") id: String): Call<String>
+    @POST("newgame")
+    fun getNewGame(@Body game: JsonObject): Call<JsonObject>
 }

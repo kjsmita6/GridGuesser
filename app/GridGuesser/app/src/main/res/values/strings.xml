@@ -13,4 +13,6 @@
     <string name="congratulations">Congratulations</string>
     <string name="winner">You Won!</string>
     <string name="main_menu">To Main Menu</string>
+    <string name="create_game_title">Game Title:</string>
+    <string name="code_label">Code:</string>
 </resources>

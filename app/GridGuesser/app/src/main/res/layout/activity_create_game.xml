@@ -11,10 +11,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">>
+        app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/create_game"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -29,29 +29,30 @@
             android:paddingBottom="50dp">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/code_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="35dp"
                 android:text="@string/code"
                 android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/textView3"
+            <EditText
+                android:id="@+id/code_field"
+                android:maxLength="32"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/code_complete"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/waiting_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Waiting for other player to join..."
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:visibility="invisible" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
