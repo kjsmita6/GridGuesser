@@ -13,4 +13,6 @@
     <string name="congratulations">Congratulations</string>
     <string name="winner">You Won!</string>
     <string name="main_menu">To Main Menu</string>
+    <string name="switch_toggle_daylight">Use Daylight Sensor</string>
+    <string name="switch_toggle_temp">Use Temperature Sensor</string>
 </resources>
