@@ -16,4 +16,5 @@
     <string name="create_game_title">Game Title:</string>
     <string name="code_label">Code:</string>
     <string name="vs"> | </string>
+    <string name="join_error_text">Sorry, that game is either full or does not exist. Please try a different code</string>
 </resources>

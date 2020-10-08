@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.create_game)?.setOnClickListener {
             newGame()
         }
+
+        findViewById<Button>(R.id.join_game)?.setOnClickListener {
+            joinGame()
+        }
     }
 
     private fun activeGames(){
@@ -40,6 +44,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun newGame(){
         val intent = CreateGameActivity.newIntent(this@MainActivity)
+        startActivity(intent)
+    }
+
+    private fun joinGame(){
+        val intent = JoinActivity.newIntent(this@MainActivity)
         startActivity(intent)
     }
 }

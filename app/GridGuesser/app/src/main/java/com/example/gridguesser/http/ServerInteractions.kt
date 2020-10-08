@@ -73,7 +73,7 @@ class ServerInteractions {
 
     fun newGame(title: String, id: String): LiveData<JsonObject> {
         val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
-        var gameBody = JsonObject()
+        val gameBody = JsonObject()
         gameBody.addProperty("title", title)
         gameBody.addProperty("player1", id)
         val newGameRequest: Call<JsonObject> = serverAPI.getNewGame(gameBody)
@@ -88,6 +88,31 @@ class ServerInteractions {
                 call: Call<JsonObject>,
                 response: Response<JsonObject>
             ) {
+                responseLiveData.value = response.body()
+            }
+        })
+
+        return responseLiveData
+    }
+
+    fun joinGame(gameID: String, id: String): LiveData<JsonObject> {
+        val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
+        val gameBody = JsonObject()
+        gameBody.addProperty("code", gameID)
+        gameBody.addProperty("player2", id)
+        val joinGameRequest: Call<JsonObject> = serverAPI.joinNewGame(gameBody)
+        joinGameRequest.enqueue(object : Callback<JsonObject> {
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e(TAG, "Failed to join game", t)
+                responseLiveData.value = null
+            }
+
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+                Log.d(TAG, response.toString())
                 responseLiveData.value = response.body()
             }
         })

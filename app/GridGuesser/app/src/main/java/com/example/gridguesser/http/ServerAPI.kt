@@ -12,4 +12,7 @@ interface ServerAPI {
 
     @POST("newgame")
     fun getNewGame(@Body game: JsonObject): Call<JsonObject>
+
+    @POST("joingame")
+    fun joinNewGame(@Body game: JsonObject): Call<JsonObject>
 }
