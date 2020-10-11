@@ -11,7 +11,8 @@ import kotlinx.android.synthetic.main.square.view.*
 
 class SpaceAdapter (
     private val context: Context?,
-    private val squares: Array<String>
+    private val squares: Array<String>,
+    private var ships: Int
 ) : BaseAdapter() {
     val squareList = squares
 
@@ -44,8 +45,11 @@ class SpaceAdapter (
         spaceView.spaceBtn.setOnClickListener {
             Log.d("SpaceAdapter","button pressed")
             squares[position] = "3"
+            ships = ships + 1
             notifyDataSetChanged()
+            //tell database
         }
+
         //foodView.textView.text = food!!
         R.layout.square
         return spaceView

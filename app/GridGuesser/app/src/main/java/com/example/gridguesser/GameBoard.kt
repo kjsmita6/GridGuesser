@@ -46,8 +46,8 @@ class GameBoard : Fragment() {
         }
 
         gridView = view.findViewById(R.id.gridview) as GridView
-        val adapter = SpaceAdapter(context, playerNames)
-        gridView.adapter = adapter
+        //val adapter = SpaceAdapter(context, playerNames)
+        //gridView.adapter = adapter
         //adapter.notifyDataSetChanged()
         //gridView.invalidateViews()
         return view
