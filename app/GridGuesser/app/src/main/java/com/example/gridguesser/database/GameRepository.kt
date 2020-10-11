@@ -32,4 +32,8 @@ class GameRepository private constructor(context: Context) {
 
     fun getGames(): LiveData<List<Game>> = gameDao.getGames()
 
+    fun updateGame(game: Game) = gameDao.updateGame(game)
+
+    fun addGame(game: Game) = gameDao.addGame(game)
+
 }

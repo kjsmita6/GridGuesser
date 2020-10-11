@@ -12,6 +12,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.Observer
+import com.example.gridguesser.database.Game
+import com.example.gridguesser.database.GameRepository
 import com.example.gridguesser.deviceID.DeviceID
 import com.example.gridguesser.http.ServerInteractions
 
@@ -21,6 +23,7 @@ class JoinActivity : AppCompatActivity() {
     lateinit var codeEntry: EditText
     lateinit var joinButton: Button
     lateinit var errorLabel: TextView
+    var gameRepo = GameRepository.get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +63,10 @@ class JoinActivity : AppCompatActivity() {
             Observer { responseString ->
                 Log.d(TAG, "Response received: $responseString")
                 if(responseString?.get("error") != null){
-                    //ADD TO DB, SWITCH TO GAME SCREEN
+                    var newGame = Game(responseString.get("id").asInt, responseString.get("title").toString(),
+                        responseString.get("player1").toString(), "username", 0, 0)
+                    gameRepo.addGame(newGame)
+                    //TODO: ADD TO DB, SWITCH TO GAME SCREEN
                 } else {
                     errorLabel.visibility = View.VISIBLE
                     joinButton.isEnabled = true

@@ -7,13 +7,13 @@ import androidx.room.Query
 import androidx.room.Update
 
 @Dao
-interface GameDao {
-    @Query("SELECT * FROM active_games")
-    fun getGames(): LiveData<List<Game>>
+interface SettingsDao {
+    @Query("SELECT * FROM settings")
+    fun getSettings(): LiveData<List<Settings>>
 
     @Update
-    fun updateGame(game: Game)
+    fun updateSettings(settings: Settings)
 
     @Insert
-    fun addGame(game: Game)
+    fun addSettings(settings: Settings)
 }
