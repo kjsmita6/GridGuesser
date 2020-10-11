@@ -34,11 +34,10 @@
         android:id="@+id/team_a_pts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/team_b"
+        app:layout_constraintEnd_toStartOf="@+id/vs_2"
         tools:text=" 110 " />
 
     <TextView
@@ -59,15 +58,11 @@
         android:id="@+id/vs_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginBottom="16dp"
         android:text="@string/vs"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/team_b_pts"
-        app:layout_constraintStart_toEndOf="@+id/team_a_pts" />
+        app:layout_constraintEnd_toStartOf="@+id/team_b_pts" />
 
     <TextView
         android:id="@+id/team_b"
@@ -84,11 +79,10 @@
         android:id="@+id/team_b_pts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/team_a_pts"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:text=" 110 " />
 
 
