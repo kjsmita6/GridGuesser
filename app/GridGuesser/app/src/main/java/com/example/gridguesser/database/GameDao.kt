@@ -16,4 +16,13 @@ interface GameDao {
 
     @Insert
     fun addGame(game: Game)
+
+    @Query("SELECT * FROM settings")
+    fun getSettings(): LiveData<List<Settings>>
+
+    @Update
+    fun updateSettings(settings: Settings)
+
+    @Insert
+    fun addSettings(settings: Settings)
 }

@@ -1,7 +1,6 @@
 package com.example.gridguesser.http
 
 import com.google.gson.JsonObject
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -15,4 +14,7 @@ interface ServerAPI {
 
     @POST("joingame")
     fun joinNewGame(@Body game: JsonObject): Call<JsonObject>
+
+    @POST("newuser")
+    fun addUser(@Body user: JsonObject): Call<JsonObject>
 }

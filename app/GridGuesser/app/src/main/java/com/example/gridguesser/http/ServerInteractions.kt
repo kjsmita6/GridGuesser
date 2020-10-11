@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonObject
 import okhttp3.OkHttpClient
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -111,6 +110,31 @@ class ServerInteractions {
 
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                 Log.e(TAG, "Failed to join game", t)
+                responseLiveData.value = null
+            }
+
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+                Log.d(TAG, response.toString())
+                responseLiveData.value = response.body()
+            }
+        })
+
+        return responseLiveData
+    }
+
+    fun addUser(deviceID: String): LiveData<JsonObject> {
+        val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
+        val userBody = JsonObject()
+        userBody.addProperty("id", deviceID)
+        userBody.addProperty("username", deviceID.substring(0, 5))
+        val addUserRequest: Call<JsonObject> = serverAPI.addUser(userBody)
+        addUserRequest.enqueue(object : Callback<JsonObject> {
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e(TAG, "Failed to add user", t)
                 responseLiveData.value = null
             }
 
