@@ -43,6 +43,8 @@ class SpaceAdapter (
         spaceView.spaceBtn.text = spaceTxt
         spaceView.spaceBtn.setOnClickListener {
             Log.d("SpaceAdapter","button pressed")
+            squares[position] = "3"
+            notifyDataSetChanged()
         }
         //foodView.textView.text = food!!
         R.layout.square
