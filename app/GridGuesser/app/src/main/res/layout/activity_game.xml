@@ -87,7 +87,7 @@
         android:layout_height="wrap_content"
         android:padding="0dp"
         android:paddingBottom="0dp"
-        android:text="Opponents Ships"
+        android:text="@string/your_ships"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

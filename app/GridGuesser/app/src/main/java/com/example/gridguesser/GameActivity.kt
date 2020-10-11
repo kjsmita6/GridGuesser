@@ -1,17 +1,27 @@
 package com.example.gridguesser
 
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.GridView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import com.example.gridguesser.database.GameRepository
 
+private const val TAG = "GameActivity"
 
 class GameActivity : AppCompatActivity() {
-    private var state = 0; // 0 - place ships, 1 - player one turn, 2- player two turn
-    private var ships = 0;
     private lateinit var gridView: GridView
+    private lateinit var opp_Btn: Button
+    private lateinit var my_Btn: Button
+    private lateinit var userTurn: TextView
+    private lateinit var boardTitle: TextView
+
+    private var initialShips = 5
+
     private var playerOneBoard = arrayOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
         "1", "", "", "3", "", "", "", "", "", "", "",
@@ -48,19 +58,76 @@ class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        var userTurn = findViewById(R.id.userTurn) as TextView
-        userTurn.text = ships.toString()
+        var GameRepoo = GameRepository.get()
 
 
-        var buttons = arrayOf<Button>()
-        playerOneBoard.forEach {
-            var newBtn = Button(this)
-            newBtn.text = it
-            buttons.plus(newBtn)
+        opp_Btn = findViewById(R.id.goToOpponent)
+        my_Btn = findViewById(R.id.goToPlayer)
+        userTurn = findViewById(R.id.userTurn)
+        boardTitle = findViewById(R.id.boardTitle)
+
+        updateGameView(GameRepoo.state, GameRepoo.ships.value!!)
+
+            GameRepoo.ships.observe(
+            this,
+            Observer { ships ->
+                ships?.let {
+                    Log.d("GameActivity","ships was changed")
+                    //userTurn.text = "Place Ships:"+ (initialShips.minus(GameRepoo.ships.value!!)).toString()
+                    if(initialShips == GameRepoo.ships.value){
+                        GameRepoo.state = 1
+                        //send game board to server
+                    }
+                    updateGameView(GameRepoo.state, GameRepoo.ships.value!!)
+
+                }
+            })
+
+        setupBoard(playerOneBoard)
+
+        opp_Btn.setOnClickListener {
+            setupBoard((playerTwoBoard))
+            my_Btn.visibility= View.VISIBLE
+            opp_Btn.visibility= View.INVISIBLE
+            boardTitle.text = resources.getString(R.string.opp_ships)
         }
 
+        my_Btn.setOnClickListener {
+            setupBoard(playerOneBoard)
+            opp_Btn.visibility = View.VISIBLE
+            my_Btn.visibility = View.INVISIBLE
+            boardTitle.text = resources.getString(R.string.your_ships)
+        }
+
+    }
+
+    fun setupBoard (playerBoard: Array<String>) {
         gridView = findViewById(R.id.gridview) as GridView
-        val adapter = SpaceAdapter(this, playerOneBoard, ships)
+        val adapter = SpaceAdapter(this, playerBoard)
         gridView.adapter = adapter
+    }
+
+    //updates the view based on the state
+    fun updateGameView (state: Int, numShips: Int) {
+        when(state){
+            0 -> { //placing ships
+                userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
+                opp_Btn.visibility= View.INVISIBLE
+                my_Btn.visibility= View.INVISIBLE
+            }
+            1 -> {
+                userTurn.text = "Player One's Turn"
+                opp_Btn.visibility = View.VISIBLE
+                my_Btn.visibility = View.INVISIBLE
+            }
+            2-> {
+                userTurn.text = "Player Two's Turn"
+//                my_Btn.visibility = View.VISIBLE
+//                opp_Btn.visibility = View.INVISIBLE
+            }
+            else -> {
+                Log.d( TAG, "something is wrong")
+            }
+        }
     }
 }
