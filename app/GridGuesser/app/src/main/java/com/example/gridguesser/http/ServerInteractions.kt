@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonObject
+import okhttp3.OkHttpClient
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -11,6 +12,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.concurrent.TimeUnit
 
 private const val TAG = "GridGuesser"
 
@@ -22,8 +24,12 @@ class ServerInteractions {
     var serverStatus: LiveData<Boolean>
 
     init {
+        val okHttpClient = OkHttpClient().newBuilder()
+            .connectTimeout(3, TimeUnit.SECONDS)
+            .build()
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(url)
+            .client(okHttpClient)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()

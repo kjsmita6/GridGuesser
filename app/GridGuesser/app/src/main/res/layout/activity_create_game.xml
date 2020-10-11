@@ -50,7 +50,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Waiting for other player to join..."
+            android:text="@string/waiting_text"
+            android:textAlignment="center"
             android:textSize="20sp"
             android:visibility="invisible" />
     </LinearLayout>

@@ -58,15 +58,24 @@ class CreateGameActivity : AppCompatActivity() {
     private fun submitGame(){
         val gameCode = serverInteractions.newGame(codeField.text.toString(), DeviceID.getDeviceID(contentResolver))
         createGame.isEnabled = false
+        codeField.isEnabled = false
         gameCode.observe(
             this,
             Observer { responseString ->
-                Log.d(TAG, "Response received: $responseString, ${responseString.get("code")}")
-                codeLabel.text = getString(R.string.code_label)
-                codeField.setText(responseString.get("code").toString().replace("\"", ""))
-                codeField.isEnabled = false
-                createGame.isEnabled = false
-                waitingText.visibility = View.VISIBLE
+                Log.d(TAG, "Response received: $responseString")
+                if(responseString?.get("error") != null) {
+                    codeLabel.text = getString(R.string.code_label)
+                    codeField.setText(responseString.get("code").toString().replace("\"", ""))
+                    codeField.isEnabled = false
+                    createGame.isEnabled = false
+                    waitingText.visibility = View.VISIBLE
+                    waitingText.text = getString(R.string.waiting_text)
+                } else {
+                    codeField.isEnabled = true
+                    createGame.isEnabled = true
+                    waitingText.visibility = View.VISIBLE
+                    waitingText.text = getString(R.string.create_error_text)
+                }
                 //TODO: ADD TO LOCAL DB FOR ACTIVE GAMES
             })
 
