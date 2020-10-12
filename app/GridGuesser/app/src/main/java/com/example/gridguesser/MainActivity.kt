@@ -52,10 +52,15 @@ class MainActivity : AppCompatActivity() {
                     if(responseList.isEmpty()){
                         settingsRepo.addSettings(settingsRepo.currentSettings)
                         findViewById<TextView>(R.id.user_welcome).text = "Welcome, ${settingsRepo.currentSettings.username}"
-                        serverInteractions.addUser(deviceID)
+                        if (token != null) {
+                            serverInteractions.addUser(deviceID, token)
+                        }
                     } else {
                         settingsRepo.currentSettings = responseList[0]
                         findViewById<TextView>(R.id.user_welcome).text = "Welcome, ${responseList[0].username}"
+                        if (token != null) {
+                            serverInteractions.updateUser(deviceID, responseList[0].username, token)
+                        }
                     }
                     Log.d(TAG, "FOUND SETTINGS: $responseList")
                 }

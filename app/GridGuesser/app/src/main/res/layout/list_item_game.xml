@@ -85,5 +85,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:text=" 110 " />
 
+    <ImageView
+        android:id="@+id/game_change_indicator"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/team_b_pts"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_gamechange" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
