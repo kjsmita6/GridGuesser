@@ -1,5 +1,7 @@
 package com.example.gridguesser
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -95,5 +97,11 @@ class MainActivity : AppCompatActivity() {
     private fun joinGame(){
         val intent = JoinActivity.newIntent(this@MainActivity)
         startActivity(intent)
+    }
+
+    companion object{
+        fun newIntent(packageContext: Context): Intent {
+            return Intent(packageContext, MainActivity::class.java)
+        }
     }
 }
