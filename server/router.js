@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const util = require('./utils');
 const logger = util.logger
+const Firebase = require('./firebase');
 
 const DatabaseRouter = require('./database/dbrouter');
 DatabaseRouter.initialize();
@@ -13,8 +14,8 @@ function logPost(req) {
 
 router.get('/', (req, res) => {
     logger.silly(util.parseReq('GET', req));
-    res.statusCode = 200;
-    res.send('Success');
+    res.status(200).send('Success');
+    return;
 });
 
 router.post('/newgame', (req, res) => {
@@ -24,59 +25,48 @@ router.post('/newgame', (req, res) => {
         code = util.generateID();
         database.runAllQuery('select * from games where code = ? and (state = 1 or state = 2)', [code], (err, rows) => {
             if (err) {
-                res.statusCode = 500;
-                res.json({
-                    error: err.message
-                });
+                res.status(500).json({ error: err.message });
                 res.end();
                 return;
             }
             if (rows.length > 0) {
                 code = '';
+            } else {
+                let title = req.body.title;
+                let player1 = req.body.player1;
+                database.createGame(title, code, player1, (err1, response) => {
+                    if (err1) {
+                        logger.warn(`Error creating game: ${err1.message}: ${err1.stack}`);
+                        res.status(500).json({ error: err1.message });
+                        return;
+                    } else {
+                        res.status(200).json({ error: null, id: response.id, code: response.code });
+                        return;
+                    }
+                });
             }
         });
     }
-    let title = req.body.title;
-    let player1 = req.body.player1;
-    database.createGame(title, code, player1, (err, response) => {
-        if (err) {
-            logger.warn(`Error creating game: ${err.message}: ${err.stack}`);
-            res.statusCode = 500;
-            res.json({
-                error: err.message
-            });
-        } else {
-            res.statusCode = 200;
-            res.json({
-                id: response.id,
-                code: response.code
-            });
-        }
-        res.end();
-    });
 });
 
 router.post('/newuser', (req, res) => {
     logPost(req);
     let id = req.body.id;
     let username = req.body.username;
-    database.createUser(id, username, err => {
+    let token = req.body.token
+    database.createUser(id, username, token, err => {
         if (err) {
             logger.warn(`Error creating user: ${err.message}: ${err.stack}`);
-            res.statusCode = 500;
-            res.json({
-                error: err.message
-            });
+            res.status(500).json({ error: err.message });
+            return;
         } else {
-            res.statusCode = 200;
-            res.json({ 
-                error: null
-            });
+            res.status(200).json({ error: null });
+            return;
         }
-        res.end();
     });
 });
 
+/*
 router.post('/updateboard', (req, res) => {
     logPost(req);
     let id = req.body.id;
@@ -107,6 +97,7 @@ router.post('/updateboard', (req, res) => {
         res.end();
     });
 });
+*/
 
 router.post('/joingame', (req, res) => {
     logPost(req);
@@ -114,48 +105,120 @@ router.post('/joingame', (req, res) => {
     let player2 = req.body.player2;
     database.getActiveGame(code, (err, rows) => {
         if (err) {
-            res.statusCode = 500;
-            res.json({
-                error: err.message
-            });
+            res.status(500).json({ error: err.message });
+            return;
         } else {
             if (rows.length != 1) {
-                res.statusCode = 500;
-                res.json({
-                    error: 'ERR_NO_MATCHING_GAMES'
-                });
+                res.status(500).json({ error: 'ERR_NO_MATCHING_GAMES' });
+                return;
             } else {
                 let id = rows[0].id;
-                database.joinGame(id, player2, (err, rows) => {
-                    if (err) {
-                        res.statusCode = 500;
-                        res.json({
-                            error: err.message
-                        });
+                logger.verbose('Rows: ' + JSON.stringify(rows[0], null, 4));
+                database.getPlayerUsername(rows[0].player1, (err1, rows1) => {
+                    if (err1) {
+                        res.status(500).json({ error: err1.message });
+                        return;
                     } else {
-                        res.statusCode = 200;
+                        logger.verbose('Rows1: ' + JSON.stringify(rows1, null, 4));
+                        database.joinGame(id, player2, (err2, rows2) => {
+                            if (err2) { 
+                                res.status(500).json({ error: err2.message });
+                            } else {
+                                logger.verbose('Rows2: ' + rows2);
+                                res.status(200).json({ error: null, id: id, title: rows[0].title, player1_username: rows1.username });
+                            }
+                        });
                     }
                 });
             }
         }
-        res.end();
     });
 });
 
 router.post('/finishgame', (req, res) => {
     logPost(req);
-    let code = req.body.code;
-    database.finishGame(code, (err, rows) => {
+    let id = req.body.id;
+    database.finishGame(id, (err, rows) => {
         if (err) {
-            res.statusCode = 500;
-            res.json({
-                error: err.message
-            });
+            res.status(500).json({ error: err.message });
+            return;
         } else {
-            res.statusCode = 200;
+            res.status(200).json({ error: null });
+
         }
-        res.end();
     });
+});
+
+router.post('/move', (req, res) =>{ 
+    logPost(req);
+    let id = req.body.id;
+    let player = req.body.player;
+    let coords = req.body.coords;
+    let x = coords.x;
+    let y = coords.y;
+    database.getBoards(id, (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        } else {
+            let player1 = rows[0].player1;
+            let player2 = rows[0].player2;
+            let player1_board = rows[0].player1_board;
+            let player2_board = rows[0].player2_board;
+            if (player1 === player) {
+                let state = player2_board[x][y].state;
+                if (state == 0) {
+                    logger.verbose('Player 1 miss');
+                    player1_board[x][y].state = 2;
+                    player2_board[x][y].state = 2;
+                } else if (state == 1) {
+                    logger.verbose('Player 1 hit');
+                    player1_board[x][y] = 4;
+                    player2_board[x][y] = 4;
+                }
+            } else if (player2 === player) {
+                let state = player1_board[x][y].state;
+                if (state == 0) {
+                    logger.verbose('Player 2 miss');
+                    player1_board[x][y].state = 2;
+                    player2_board[x][y].state = 2;
+                } else if (state == 1) {
+                    logger.verbose('Player 2 hit');
+                    player1_board[x][y] = 4;
+                    player2_board[x][y] = 4;
+                }
+            } else {
+                res.status(500).json({ error: 'ERR_MISMATCH_PLAYER' });
+                return;
+            }
+        }
+    });
+});
+
+router.post('/updateuser', (req, res) => {
+    logPost(req);
+    let id = req.body.id;
+    let username = req.body.username;
+    let token = req.body.token;
+    database.updateUser(id, username, token, (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json({ error: null });
+        }
+    });
+});
+
+router.post('/testmessage', (req, res) => {
+    logPost(req);
+    let token = 'd_fp2RkTR1-7A8_s-b0d1E:APA91bELxfY8ur0npmWA79kGSdx0UGSUWC6gAul-SGaKhYY29Y0lT4sbNCGcpfMMo_1dJn3DjOF69yiZSABt9tDMOhLHN8F0nuKHO2Fhtji8wZh1nWGW70jKpgSKmVCaUyGFYON_UVBe';
+    let payload = req.body.payload
+    logger.verbose(JSON.stringify(payload, null, 4));
+    let options = {
+        priority: 'high'
+    };
+    Firebase.sendMessage(token, payload, options);
+    res.status(200).end();
 });
 
 module.exports = router;

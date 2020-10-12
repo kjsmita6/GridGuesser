@@ -2,10 +2,9 @@ const log = require('../utils').logger;
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const Board = require('../board');
-const { logger } = require('../utils');
 
 const CREATE_TABLE_GAMES = 'create table if not exists games (id int(32) not null primary key, state int(1) not null, title varchar2(32) not null, code varchar2(4) not null, player1 varchar2(32) not null, player2 varchar2(32) null, player1_board varchar(2048) not null, player2_board varchar(2048) not null, foreign key(player1) references users(id), foreign key(player2) references users(id))';
-const CREATE_TABLE_USERS = 'create table if not exists users (id varchar(32) not null primary key, username varchar(32) not null)';
+const CREATE_TABLE_USERS = 'create table if not exists users (id varchar(32) not null primary key, username varchar(32) not null, token varchar(256) not null)';
 
 class Database {
     constructor(db) {
@@ -85,8 +84,8 @@ class Database {
         });
     }
 
-    createUser(id, username, callback) {
-        this.runFirstQuery(`insert into users (id, username) values (?, ?)`, [id, username], (err, rows) => {
+    createUser(id, username, token, callback) {
+        this.runFirstQuery(`insert into users (id, username, token) values (?, ?, ?)`, [id, username, token], (err, rows) => {
             callback(err);
         });
     }
@@ -104,7 +103,7 @@ class Database {
     }
 
     getActiveGame(code, callback) {
-        this.runAllQuery(`select id from games where code = ? and state = 1`, [code], (err, rows) => {
+        this.runAllQuery(`select * from games where code = ? and state = 1`, [code], (err, rows) => {
             callback(err, rows);
         });
     }
@@ -115,8 +114,26 @@ class Database {
         });
     }
 
-    finishGame(code, callback) {
-        this.runFirstQuery(`update games set state = 0 where code = ?`, [code], (err, rows) => {
+    getPlayerUsername(id, callback) {
+        this.runFirstQuery(`select username from users where id = ?`, [id], (err, rows) => {
+            callback(err, rows);
+        });
+    }
+
+    finishGame(id, callback) {
+        this.runFirstQuery(`update games set state = 0 where id = ?`, [id], (err, rows) => {
+            callback(err, rows);
+        });
+    }
+
+    getBoards(id, callback) {
+        this.runFirstQuery(`select player1, player2, player1_board, player2_board from games where code = ?`, [id], (err, rows) => {
+            callback(err, rows);
+        });
+    }
+
+    updateUser(id, username, token, callback) {
+        this.runFirstQuery('update users set username = ?, token = ? where id = ?', [username, token, id], (err, rows) => {
             callback(err, rows);
         });
     }
