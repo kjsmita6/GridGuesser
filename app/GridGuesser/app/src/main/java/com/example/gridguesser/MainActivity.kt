@@ -1,14 +1,16 @@
 package com.example.gridguesser
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
-import android.widget.TextView
-import androidx.lifecycle.LiveData
+import android.view.View
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.gridguesser.deviceID.DeviceID
 import com.example.gridguesser.http.ServerInteractions
+
 
 private const val TAG = "GridGuesser"
 
@@ -24,5 +26,22 @@ class MainActivity : AppCompatActivity() {
             Observer { responseString ->
                 Log.d(TAG, "Response received: $responseString")
             })
+
+        val btnCreateGame = findViewById<Button>(R.id.create_game)
+        val btnJoinGame = findViewById<Button>(R.id.join_game)
+        val btnActiveGames = findViewById<Button>(R.id.active_games)
+
+        btnCreateGame.setOnClickListener {
+            startActivity(Intent(this, CreateGameActivity::class.java))
+        }
+
+        btnJoinGame.setOnClickListener {
+            startActivity(Intent(this, JoinActivity::class.java))
+        }
+
+        btnActiveGames.setOnClickListener {
+            startActivity(Intent(this, ActiveGamesActivity::class.java))
+        }
+
     }
 }
