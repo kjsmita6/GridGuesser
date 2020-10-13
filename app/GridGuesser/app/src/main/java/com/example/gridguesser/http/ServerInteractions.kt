@@ -19,7 +19,7 @@ class ServerInteractions {
 
     private val serverAPI: ServerAPI
     //private val url: String = "https://68.186.247.90:8080/"
-    private val url: String = "http://192.168.1.192:8080/"
+    private val url: String = "http://192.168.1.130:8080/"
     var serverStatus: LiveData<Boolean>
 
     init {
