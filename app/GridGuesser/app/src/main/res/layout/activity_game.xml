@@ -6,21 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".GameActivity">
 
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:layout_width="300dp"-->
-<!--        android:layout_height="300dp"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/goToOpponent"-->
-<!--        app:layout_constraintStart_toEndOf="@+id/goToPlayer"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/boardTitle" />-->
 
-    <fragment
-        android:id="@+id/fragment3"
-        android:name="com.example.gridguesser.GameBoard"
+    <GridView
+        android:id="@+id/gridview"
         android:layout_width="350dp"
         android:layout_height="350dp"
+        android:columnWidth="30dp"
+        android:gravity="center"
+        android:horizontalSpacing="0dp"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="0dp"
         app:layout_constraintEnd_toStartOf="@+id/goToOpponent"
-        app:layout_constraintHorizontal_bias="0.545"
-        app:layout_constraintStart_toEndOf="@+id/goToPlayer"
         app:layout_constraintTop_toBottomOf="@+id/boardTitle" />
 
     <TextView
@@ -29,24 +26,24 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:padding="0dp"
-        android:text="Your Turn"
+        android:text="Place Ships: 5"
         android:textSize="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/help"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
         android:text="Help/Rules"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button3" />
+        app:layout_constraintEnd_toStartOf="@+id/home" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Home"
@@ -94,7 +91,7 @@
         android:layout_height="161dp"
         android:layout_marginBottom="10dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
+        app:layout_constraintBottom_toTopOf="@+id/help"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
