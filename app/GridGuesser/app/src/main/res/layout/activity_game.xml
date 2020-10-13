@@ -70,7 +70,7 @@
         android:id="@+id/goToPlayer"
         android:layout_width="36dp"
         android:layout_height="61dp"
-        android:text="<"
+        android:text="@string/to_player"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/boardTitle" />
@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         android:padding="0dp"
         android:paddingBottom="0dp"
-        android:text="Opponents Ships"
+        android:text="@string/opponents_ships"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -113,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:text="Carrier - 5 Spaces"
+            android:text="@string/carrier_5_spaces"
             android:textSize="15dp" />
 
         <TextView
@@ -122,7 +122,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="5dp"
-            android:text="Battleship - 4 Spaces"
+            android:text="@string/battleship_4_spaces"
             android:textSize="15dp" />
 
         <TextView
@@ -131,7 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="5dp"
-            android:text="Cruiser- 3 Spaces"
+            android:text="@string/cruiser_3_spaces"
             android:textSize="15dp" />
 
         <TextView
@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="5dp"
-            android:text="Submarine - 3 Spaces"
+            android:text="@string/submarine_3_spaces"
             android:textSize="15dp" />
 
         <TextView
@@ -149,7 +149,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="5dp"
-            android:text="Destroyer - 2 Spaces"
+            android:text="@string/destroyer_2_spaces"
             android:textSize="15dp" />
     </LinearLayout>
 

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.GridView
 import androidx.fragment.app.Fragment
 
-private const val TAG = "GameBoardFragment"
+private const val TAG = "GridGuesser"
 
 
 class GameBoard : Fragment() {

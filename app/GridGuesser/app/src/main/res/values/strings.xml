@@ -21,5 +21,12 @@
     <string name="waiting_text"> Waiting for another player to join…</string>
     <string name="create_error_text">Sorry, we were unable to create your game, please try again later</string>
     <string name="join_error_text">Sorry, that game is either full or does not exist. Please try a different code</string>
+    <string name="to_player"><![CDATA[<]]></string>
+    <string name="opponents_ships">Opponents Ships</string>
+    <string name="carrier_5_spaces">Carrier - 5 Spaces</string>
+    <string name="battleship_4_spaces">Battleship - 4 Spaces</string>
+    <string name="cruiser_3_spaces">Cruiser- 3 Spaces</string>
+    <string name="submarine_3_spaces">Submarine - 3 Spaces</string>
+    <string name="destroyer_2_spaces">Destroyer - 2 Spaces</string>
 
 </resources>
