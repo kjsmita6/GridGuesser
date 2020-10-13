@@ -21,4 +21,6 @@
     <string name="join_error_text">Sorry, that game is either full or does not exist. Please try a different code</string>
     <string name="opp_ships">Opponents Ships</string>
     <string name="your_ships">Your Ships</string>
+    <string name="switch_toggle_daylight">Toggle Daylight Sensor</string>
+    <string name="switch_toggle_temp">Toggle Temperature Sensor</string>
 </resources>
