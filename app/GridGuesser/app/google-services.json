@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "361282355515",
+    "firebase_url": "https://grid-guesser.firebaseio.com",
+    "project_id": "grid-guesser",
+    "storage_bucket": "grid-guesser.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361282355515:android:33ad30d2df9e658144b71e",
+        "android_client_info": {
+          "package_name": "com.example.gridguesser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361282355515-vhs8evp9hatanmti2f4k487g6l73flj1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ_P_WDuEA206Ms6QCSL4PeP-kI1lXMsk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361282355515-vhs8evp9hatanmti2f4k487g6l73flj1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

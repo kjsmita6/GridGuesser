@@ -12,5 +12,14 @@
     <string name="active_games">Active Games</string>
     <string name="congratulations">Congratulations</string>
     <string name="winner">You Won!</string>
+    <string name="sorry">Sorry</string>
+    <string name="loser">You Lost</string>
     <string name="main_menu">To Main Menu</string>
+    <string name="create_game_title">Game Title:</string>
+    <string name="code_label">Code:</string>
+    <string name="vs"> | </string>
+    <string name="waiting_text"> Waiting for another player to join…</string>
+    <string name="create_error_text">Sorry, we were unable to create your game, please try again later</string>
+    <string name="join_error_text">Sorry, that game is either full or does not exist. Please try a different code</string>
+
 </resources>
