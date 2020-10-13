@@ -97,7 +97,7 @@ class Database {
     }
 
     updateBoards(id, boards, callback) {
-        this.runFirstQuery(`update games set player1_board = ?, player2_board = ? where id = ?`, [id, boards[0], boards[1]], (err, rows) => {
+        this.runFirstQuery(`update games set player1_board = ?, player2_board = ? where id = ?`, [boards[0], boards[1], id], (err, rows) => {
             callback(err, rows);
         });
     }
@@ -127,7 +127,7 @@ class Database {
     }
 
     getBoards(id, callback) {
-        this.runFirstQuery(`select player1, player2, player1_board, player2_board from games where code = ?`, [id], (err, rows) => {
+        this.runFirstQuery(`select player1, player2, player1_board, player2_board from games where id = ?`, [id], (err, rows) => {
             callback(err, rows);
         });
     }
@@ -137,6 +137,13 @@ class Database {
             callback(err, rows);
         });
     }
+
+    getPlayersInGame(game, callback) {
+        this.runFirstQuery('select player1, player2 from games where id = ?', [game], (err, rows) => {
+            callback(err, rows);
+        });
+    }
+
 }
 
 module.exports = Database;

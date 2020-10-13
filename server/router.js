@@ -152,6 +152,7 @@ router.post('/finishgame', (req, res) => {
 router.post('/move', (req, res) =>{ 
     logPost(req);
     let id = req.body.id;
+    logger.verbose(id);
     let player = req.body.player;
     let coords = req.body.coords;
     let x = coords.x;
@@ -161,11 +162,16 @@ router.post('/move', (req, res) =>{
             res.status(500).json({ error: err.message });
             return;
         } else {
-            let player1 = rows[0].player1;
-            let player2 = rows[0].player2;
-            let player1_board = rows[0].player1_board;
-            let player2_board = rows[0].player2_board;
-            if (player1 === player) {
+            let player1 = rows.player1;
+            let player2 = rows.player2;
+            let player1_board = JSON.parse(rows.player1_board);
+            let player2_board = JSON.parse(rows.player2_board);
+            player1_board[x][y].state += 2;
+            player2_board[x][y].state += 2;
+            //logger.verbose(JSON.stringify(player1_board, null, 4));
+            //logger.verbose(JSON.stringify(player2_board, null, 4));
+            if (player === player1) {
+                /*
                 let state = player2_board[x][y].state;
                 if (state == 0) {
                     logger.verbose('Player 1 miss');
@@ -173,10 +179,19 @@ router.post('/move', (req, res) =>{
                     player2_board[x][y].state = 2;
                 } else if (state == 1) {
                     logger.verbose('Player 1 hit');
-                    player1_board[x][y] = 4;
-                    player2_board[x][y] = 4;
+                    player1_board[x][y].state = 3;
+                    player2_board[x][y].state = 3;
                 }
-            } else if (player2 === player) {
+                */
+                database.updateBoards(id, [JSON.stringify(player1_board), JSON.stringify(player2_board)], (err, rows) => {
+                    if (err) {
+                        res.status(500).json({ error: err.message });
+                    } else {
+                        res.status(200).json({ error: null, x: x, y: y, state: player1_board[x][y].state, turn: 2 });
+                    }
+               }); 
+            } else if (player === player2) {
+                /*
                 let state = player1_board[x][y].state;
                 if (state == 0) {
                     logger.verbose('Player 2 miss');
@@ -184,9 +199,17 @@ router.post('/move', (req, res) =>{
                     player2_board[x][y].state = 2;
                 } else if (state == 1) {
                     logger.verbose('Player 2 hit');
-                    player1_board[x][y] = 4;
-                    player2_board[x][y] = 4;
+                    player1_board[x][y].state = 3;
+                    player2_board[x][y].state = 3;
                 }
+                */
+                database.updateBoards(id, [player1_board, player2_board], (err, rows) => {
+                    if (err) {
+                        res.status(500).json({ error: err.message });
+                    } else {
+                        res.status(200).json({ error: null, x: x, y: y, state: player1_board[x][y].state, turn: 1 });
+                    }
+                }); 
             } else {
                 res.status(500).json({ error: 'ERR_MISMATCH_PLAYER' });
                 return;
@@ -219,6 +242,40 @@ router.post('/testmessage', (req, res) => {
     };
     Firebase.sendMessage(token, payload, options);
     res.status(200).end();
+});
+
+router.post('/whichplayer', (req, res) => {
+    logPost(req);
+    let game = req.body.game;
+    let player = req.body.player;
+    database.getPlayersInGame(game, (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            if (player === rows.player1) {
+                res.status(200).json({ error: null, player: 1 });
+            } else if (player === rows.player2) {
+                res.status(200).json({ error: null, player: 2 });
+            } else {
+                logger.warn('Unknown player ' + player);
+                res.status(500).json({ error: 'Unknown player ' + player });
+            }
+        }
+    });
+});
+
+router.post('/makeboards', (req, res) => {
+    logPost(req);
+    let game = req.body.game;
+    let player1_board = req.body.player1_board;
+    let player2_board = req.body.player2_board;
+    database.updateBoards(game, [player1_board, player2_board], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json({ error: null });
+        }
+    });
 });
 
 module.exports = router;
