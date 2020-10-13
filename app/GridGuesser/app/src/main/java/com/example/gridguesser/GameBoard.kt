@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.GridView
 import androidx.fragment.app.Fragment
 
@@ -28,6 +29,8 @@ class GameBoard : Fragment() {
 
     )
 
+    private var buttons = arrayOf<Button>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,9 +39,17 @@ class GameBoard : Fragment() {
         //return super.onCreateView(inflater, container, savedInstanceState)
         val view = inflater.inflate(R.layout.fragment_game, container, false)
 
-        gridView = view.findViewById(R.id.gridview) as GridView
-        gridView.adapter = SpaceAdapter(context, playerNames)
+        playerNames.forEach {
+            var newBtn = Button(context)
+            newBtn.text = it
+            buttons.plus(newBtn)
+        }
 
+        gridView = view.findViewById(R.id.gridview) as GridView
+        //val adapter = SpaceAdapter(context, playerNames)
+        //gridView.adapter = adapter
+        //adapter.notifyDataSetChanged()
+        //gridView.invalidateViews()
         return view
     }
 

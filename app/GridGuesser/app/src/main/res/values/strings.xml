@@ -6,7 +6,7 @@
     <string name="code">Code: </string>
     <string name="code_complete">AAAA</string>
     <string name="rules">Rules</string>
-    <string name="rulelist">1. Rule 1\n2. Rule 2\n3. Rule 3</string>
+    <string name="rulelist">1. Each player will start by placing 5 squares\n2. Each turn they can attempt to hit one of their opponents squares by clicking a point on the grid\n3. Whoever guesses the placement of all their opponents squares first wins the game</string>
     <string name="back">Back</string>
     <string name="title_subtext">A Naval Strategy Game</string>
     <string name="active_games">Active Games</string>
@@ -21,5 +21,7 @@
     <string name="waiting_text"> Waiting for another player to join…</string>
     <string name="create_error_text">Sorry, we were unable to create your game, please try again later</string>
     <string name="join_error_text">Sorry, that game is either full or does not exist. Please try a different code</string>
+    <string name="opp_ships">Opponents Ships</string>
+    <string name="your_ships">Your Ships</string>
 
 </resources>

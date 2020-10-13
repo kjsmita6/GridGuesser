@@ -31,11 +31,12 @@
             android:paddingHorizontal="10dp"
             android:paddingTop="20dp"
             android:paddingRight="20dp"
+            android:padding = "30dp"
             android:text="@string/rulelist"
             android:textSize="20sp" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/backToGame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

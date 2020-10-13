@@ -2,12 +2,12 @@ package com.example.gridguesser
 
 import android.content.Context
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.gridguesser.activegames.ActiveGamesActivity
 import com.example.gridguesser.database.GameRepository
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    companion object{
+    companion object {
         fun newIntent(packageContext: Context): Intent {
             return Intent(packageContext, MainActivity::class.java)
         }
