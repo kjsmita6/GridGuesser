@@ -63,10 +63,9 @@ class JoinActivity : AppCompatActivity() {
             Observer { responseString ->
                 Log.d(TAG, "Response received: $responseString")
                 if(responseString?.get("error") != null){
-                    var newGame = Game(responseString.get("id").asInt, responseString.get("title").toString(),
-                        responseString.get("player1").toString(), "username", 0, 0)
+                    val newGame = Game(responseString.get("id").asInt, responseString.get("title").toString(),
+                        responseString.get("player1").toString(), gameRepo.currentSettings.username, 0, 0)
                     gameRepo.addGame(newGame)
-                    //TODO: ADD TO DB, SWITCH TO GAME SCREEN
                 } else {
                     errorLabel.visibility = View.VISIBLE
                     joinButton.isEnabled = true

@@ -7,6 +7,7 @@ import androidx.room.Room
 import com.example.gridguesser.deviceID.DeviceID
 import java.util.concurrent.Executors
 
+private const val TAG = "GridGuesser"
 class GameRepository private constructor(context: Context) {
     var currentSettings: Settings = Settings(0, DeviceID.getDeviceID(context.contentResolver).substring(0, 5), 0, 0)
     private val executor = Executors.newSingleThreadExecutor()

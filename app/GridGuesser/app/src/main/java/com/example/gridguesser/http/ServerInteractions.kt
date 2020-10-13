@@ -19,7 +19,7 @@ class ServerInteractions {
 
     private val serverAPI: ServerAPI
     //private val url: String = "https://68.186.247.90:8080/"
-    private val url: String = "http://192.168.1.192:8080/"
+    private val url: String = "http://192.168.1.130:8080/"
     var serverStatus: LiveData<Boolean>
 
     init {
@@ -125,16 +125,43 @@ class ServerInteractions {
         return responseLiveData
     }
 
-    fun addUser(deviceID: String): LiveData<JsonObject> {
+    fun addUser(deviceID: String, token: String): LiveData<JsonObject> {
         val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
         val userBody = JsonObject()
         userBody.addProperty("id", deviceID)
         userBody.addProperty("username", deviceID.substring(0, 5))
+        userBody.addProperty("token", token)
         val addUserRequest: Call<JsonObject> = serverAPI.addUser(userBody)
         addUserRequest.enqueue(object : Callback<JsonObject> {
 
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                 Log.e(TAG, "Failed to add user", t)
+                responseLiveData.value = null
+            }
+
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+                Log.d(TAG, response.toString())
+                responseLiveData.value = response.body()
+            }
+        })
+
+        return responseLiveData
+    }
+
+    fun updateUser(deviceID: String, uname: String, token: String): LiveData<JsonObject> {
+        val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
+        val userBody = JsonObject()
+        userBody.addProperty("id", deviceID)
+        userBody.addProperty("username", uname)
+        userBody.addProperty("token", token)
+        val updateUserRequest: Call<JsonObject> = serverAPI.updateUser(userBody)
+        updateUserRequest.enqueue(object : Callback<JsonObject> {
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e(TAG, "Failed to update user", t)
                 responseLiveData.value = null
             }
 

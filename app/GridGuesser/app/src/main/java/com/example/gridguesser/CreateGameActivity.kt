@@ -12,16 +12,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.Observer
+import com.example.gridguesser.database.Game
+import com.example.gridguesser.database.GameRepository
 import com.example.gridguesser.deviceID.DeviceID
 import com.example.gridguesser.http.ServerInteractions
 
 private const val TAG = "GridGuesser"
 class CreateGameActivity : AppCompatActivity() {
     private lateinit var serverInteractions: ServerInteractions
-    lateinit var codeLabel: TextView //displays "code:"
-    lateinit var codeField: EditText //displays the 4 digit code
-    lateinit var createGame: Button //Create game button
-    lateinit var waitingText: TextView //waiting for player
+    private var gameRepo: GameRepository = GameRepository.get()
+    private lateinit var codeLabel: TextView //displays "code:"
+    private lateinit var codeField: EditText //displays the 4 digit code
+    private lateinit var createGame: Button //Create game button
+    private lateinit var waitingText: TextView //waiting for player
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,11 +68,14 @@ class CreateGameActivity : AppCompatActivity() {
                 Log.d(TAG, "Response received: $responseString")
                 if(responseString?.get("error") != null) {
                     codeLabel.text = getString(R.string.code_label)
-                    codeField.setText(responseString.get("code").toString().replace("\"", ""))
-                    codeField.isEnabled = false
                     createGame.isEnabled = false
                     waitingText.visibility = View.VISIBLE
                     waitingText.text = getString(R.string.waiting_text)
+                    val newGame = Game(responseString.get("id").asInt, codeField.text.toString(), gameRepo.currentSettings.username, "Waiting for player...", 0, 0)
+                    codeField.setText(responseString.get("code").toString().replace("\"", ""))
+                    codeField.isEnabled = false
+
+                    gameRepo.addGame(newGame)
                 } else {
                     codeField.isEnabled = true
                     createGame.isEnabled = true

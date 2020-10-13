@@ -17,4 +17,7 @@ interface ServerAPI {
 
     @POST("newuser")
     fun addUser(@Body user: JsonObject): Call<JsonObject>
+
+    @POST("updateuser")
+    fun updateUser(@Body user: JsonObject): Call<JsonObject>
 }
