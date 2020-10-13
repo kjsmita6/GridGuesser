@@ -1,5 +1,7 @@
 package com.example.gridguesser
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,7 +11,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.example.gridguesser.MainActivity.Companion.newIntent
 import com.example.gridguesser.database.GameRepository
+
 
 private const val TAG = "GameActivity"
 
@@ -19,6 +23,9 @@ class GameActivity : AppCompatActivity() {
     private lateinit var my_Btn: Button
     private lateinit var userTurn: TextView
     private lateinit var boardTitle: TextView
+
+    private lateinit var help: Button
+    private lateinit var home: Button
 
     private var initialShips = 5
 
@@ -65,6 +72,8 @@ class GameActivity : AppCompatActivity() {
         my_Btn = findViewById(R.id.goToPlayer)
         userTurn = findViewById(R.id.userTurn)
         boardTitle = findViewById(R.id.boardTitle)
+        help = findViewById(R.id.help)
+        home = findViewById(R.id.home)
 
         updateGameView(GameRepoo.state, GameRepoo.ships.value!!)
 
@@ -99,6 +108,18 @@ class GameActivity : AppCompatActivity() {
             boardTitle.text = resources.getString(R.string.your_ships)
         }
 
+        help.setOnClickListener {
+            //TODO Go to help screen
+            val intent = Intent(this, RulesActivity::class.java)
+            startActivity(intent)
+        }
+
+        home.setOnClickListener {
+            //TODO save game state
+            //TODO go to home
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun setupBoard (playerBoard: Array<String>) {
@@ -130,4 +151,5 @@ class GameActivity : AppCompatActivity() {
             }
         }
     }
+
 }
