@@ -25,6 +25,7 @@ class CreateGameActivity : AppCompatActivity() {
     private lateinit var codeField: EditText //displays the 4 digit code
     private lateinit var createGame: Button //Create game button
     private lateinit var waitingText: TextView //waiting for player
+    var gameID = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,17 +77,20 @@ class CreateGameActivity : AppCompatActivity() {
                     codeField.isEnabled = false
 
                     gameRepo.addGame(newGame)
-                    val intent = GameActivity.newIntent(this@CreateGameActivity, responseString.get("id").asInt)
-                    startActivity(intent)
+                    gameID = responseString.get("id").asInt
                 } else {
                     codeField.isEnabled = true
                     createGame.isEnabled = true
                     waitingText.visibility = View.VISIBLE
                     waitingText.text = getString(R.string.create_error_text)
                 }
-                //TODO: ADD TO LOCAL DB FOR ACTIVE GAMES
             })
+    }
 
+    //to be called by firebase after a user joins
+    fun userJoined(){
+        val intent = GameActivity.newIntent(this@CreateGameActivity, gameID)
+        startActivity(intent)
     }
 
     companion object {
