@@ -12,9 +12,9 @@ import kotlinx.android.synthetic.main.square.view.*
 
 class SpaceAdapter (
     private val context: Context?,
-    private val squares: Array<String>
+    private val squares: MutableList<String>
 ) : BaseAdapter() {
-    val squareList = squares
+    private val squareList = squares
 
     override fun getCount(): Int {
         return squareList.size
@@ -31,7 +31,7 @@ class SpaceAdapter (
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         val value = this.squareList[position]
 
-        var GameRepoo = GameRepository.get()
+        var gameRepo = GameRepository.get()
 
 
         var inflator = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -64,13 +64,13 @@ class SpaceAdapter (
 
             spaceView.spaceBtn.setOnClickListener {
                 Log.d("SpaceAdapter", "button pressed")
-                if (GameRepoo.state == 0) {
+                if (gameRepo.state == 0) {
                     squares[position] = "1"
-                    GameRepoo.remainingShips.value = GameRepoo.remainingShips.value?.plus(1)
+                    gameRepo.remainingShips.value = gameRepo.remainingShips.value?.plus(1)
                     notifyDataSetChanged()
 
                 }
-                else if (GameRepoo.state == 1){
+                else if (gameRepo.state == 1){
                     //TODO: check if there is a ship on player two's board
                     //TODO: send player one's move to server
                 }

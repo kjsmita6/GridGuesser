@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.gridguesser.database.GameRepository
+import com.example.gridguesser.deviceID.DeviceID
+import com.example.gridguesser.http.ServerInteractions
 
 
 private const val TAG = "GridGuesser"
@@ -28,8 +30,11 @@ class GameActivity : AppCompatActivity() {
 
     private var initialShips = 5
     private var gameID: Int = -1
+    private val gameRepo = GameRepository.get()
+    private val serverInteractions = ServerInteractions.get()
+    private lateinit var deviceID: String
 
-    private var playerOneBoard = arrayOf(
+    private var playerOneBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
         "1", "", "", "", "", "", "", "", "", "", "",
         "2", "", "", "", "", "", "", "", "", "", "",
@@ -44,13 +49,13 @@ class GameActivity : AppCompatActivity() {
 
     )
 
-    private var playerTwoBoard = arrayOf(
+    private var playerTwoBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
         "1", "", "", "", "", "", "", "", "", "", "",
         "2", "", "", "", "", "", "", "", "", "", "",
         "3", "", "", "", "", "", "", "", "", "", "",
         "4", "", "", "", "", "", "", "", "", "", "",
-        "5", "", "", "", "", "", "", "", "", "", "",
+        "5", "", "", "", "", "", "", "1", "", "", "",
         "6", "", "", "", "", "", "", "", "", "", "",
         "7", "", "", "", "", "", "", "", "", "", "",
         "8", "", "", "", "", "", "", "", "", "", "",
@@ -64,16 +69,17 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-
-        var GameRepo = GameRepository.get()
+        deviceID = DeviceID.getDeviceID(contentResolver)
 
         val intent = intent
         gameID = intent.getIntExtra(GAMEID, -1)
         if(gameID == -1){
-            gameID = GameRepo.id
+            gameID = gameRepo.id
         } else {
-            GameRepo.id = gameID
+            gameRepo.id = gameID
         }
+
+        //loadBoards()
 
         //using gameID, ask server for all game info
         //convert game boards to array of states
@@ -89,19 +95,20 @@ class GameActivity : AppCompatActivity() {
         help = findViewById(R.id.help)
         home = findViewById(R.id.home)
 
-        updateGameView(GameRepo.state, GameRepo.remainingShips.value!!)
+        updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
 
-            GameRepo.remainingShips.observe(
+            gameRepo.remainingShips.observe(
             this,
             Observer { ships ->
                 ships?.let {
                     Log.d(TAG,"ships was changed")
                     //userTurn.text = "Place Ships:"+ (initialShips.minus(GameRepoo.ships.value!!)).toString()
-                    if(initialShips == GameRepo.remainingShips.value){
-                        GameRepo.state = 1
-                        //TODO: send game board to server
+                    if(initialShips == gameRepo.remainingShips.value){
+                        gameRepo.state = 1
+                        gameRepo.remainingShips.value = -1
+                        placeShips()
                     }
-                    updateGameView(GameRepo.state, GameRepo.remainingShips.value!!)
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
 
                 }
             })
@@ -136,7 +143,86 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupBoard (playerBoard: Array<String>) {
+    private fun placeShips(){
+        var board = "["
+        for(i in 1..10){
+            board += "["
+            for(j in 1..10){
+                board +=  "{\"x\":${i-1}, \"y\":${j-1}, \"state\":"
+                board += if(playerOneBoard[11 * i + j].isNotEmpty()){
+                    playerOneBoard[11*i + j]
+                } else {
+                    "0"
+                }
+                board += if(j==10){
+                    "}"
+                } else {
+                    "},"
+                }
+            }
+
+            board += if(i == 10){
+                "]"
+            } else {
+                "],"
+            }
+        }
+        board += "]"
+        Log.d(TAG, board)
+        serverInteractions.makeBoard(gameID, deviceID, board).observe(
+            this,
+            Observer { response ->
+                response?.let {
+                    Log.d(TAG,"Updated board: $response")
+                }
+            })
+    }
+
+    private fun loadBoards(){
+        serverInteractions.getBoards(gameID).observe(
+            this,
+            Observer {response ->
+                response?.let {
+                    if(response.get("player1").toString() == deviceID){
+                        playerOneBoard = parseBoard(response.get("player1_board").toString())
+                        playerTwoBoard = parseBoard(response.get("player2_board").toString())
+                    } else {
+                        playerOneBoard = parseBoard(response.get("player1_board").toString())
+                        playerTwoBoard = parseBoard(response.get("player2_board").toString())
+                    }
+                    setupBoard(playerOneBoard)
+                    var toPrint = ""
+                    for(i in 0 until playerOneBoard.size){
+                        toPrint += playerOneBoard[i] + ""
+                        if(i%11 == 0){
+                            toPrint += "\n"
+                        }
+                    }
+                    Log.d(TAG, "TO PRINT: $toPrint")
+                }
+            }
+        )
+    }
+
+    private fun parseBoard(board: String): MutableList<String>{
+        var toReturn: MutableList<String> = mutableListOf(" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "1")
+        val splitBoard = board.split(":")
+        var row = 2
+        for(i in 1 until splitBoard.size){
+            if(i % 3 == 0){
+                toReturn.add(splitBoard[i][0].toString())
+            }
+
+            if(i % 30 == 0 && row < 11){
+                toReturn.add(row.toString())
+                row++
+            }
+        }
+        Log.d(TAG, "TO RETURN: $toReturn")
+        return toReturn
+    }
+
+    private fun setupBoard (playerBoard: MutableList<String>) {
         gridView = findViewById(R.id.gridview)
         val adapter = SpaceAdapter(this, playerBoard)
         gridView.adapter = adapter
