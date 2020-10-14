@@ -12,11 +12,12 @@ class GameRepository private constructor(context: Context) {
     var currentSettings: Settings = Settings(0, DeviceID.getDeviceID(context.contentResolver).substring(0, 5), false, false)
     private val executor = Executors.newSingleThreadExecutor()
 
-    var state = 0; // 0 - place ships, 1 - player one turn, 2- player two turn
-    var ships = MutableLiveData<Int>();
+    var state = 0 // 0 - place ships, 1 - player one turn, 2- player two turn
+    var id = -1
+    var remainingShips = MutableLiveData<Int>();
 
     init{
-        ships.value = 0;
+        remainingShips.value = 0;
     }
 
     private val database : GameDatabase = Room.databaseBuilder(

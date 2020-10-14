@@ -1,10 +1,12 @@
 package com.example.gridguesser
 
 import android.content.Context
+
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -12,12 +14,13 @@ import android.widget.Button
 import android.widget.GridView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.example.gridguesser.database.GameRepository
 import com.example.gridguesser.database.Settings
 
-private const val TAG = "GameActivity"
+
+private const val TAG = "GridGuesser"
+private const val GAMEID = "game_id"
 
 class GameActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var gridView: GridView
@@ -30,35 +33,39 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var bg: View
     private lateinit var settings: Settings
 
+    private lateinit var help: Button
+    private lateinit var home: Button
+
     private var initialShips = 5
+    private var gameID: Int = -1
 
     private var playerOneBoard = arrayOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
-        "1", "", "", "3", "", "", "", "", "", "", "",
-        "2", "", "", "3", "", "", "", "", "", "", "",
-        "3", "", "", "3", "", "", "", "", "", "", "",
-        "4", "", "", "3", "", "", "", "", "", "", "",
-        "5", "", "", "3", "", "", "", "", "", "", "",
-        "6", "", "", "3", "", "", "", "", "", "", "",
-        "7", "", "", "3", "", "", "", "", "", "", "",
-        "8", "", "", "3", "", "", "", "", "", "", "",
-        "9", "", "", "3", "", "", "", "", "", "", "",
-        "10", "", "", "3", "", "", "", "", "", "", ""
+        "1", "", "", "", "", "", "", "", "", "", "",
+        "2", "", "", "", "", "", "", "", "", "", "",
+        "3", "", "", "", "", "", "", "", "", "", "",
+        "4", "", "", "", "", "", "", "", "", "", "",
+        "5", "", "", "", "", "", "", "", "", "", "",
+        "6", "", "", "", "", "", "", "", "", "", "",
+        "7", "", "", "", "", "", "", "", "", "", "",
+        "8", "", "", "", "", "", "", "", "", "", "",
+        "9", "", "", "", "", "", "", "", "", "", "",
+        "10", "", "", "", "", "", "", "", "", "", ""
 
     )
 
     private var playerTwoBoard = arrayOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
-        "1", "", "", "2", "", "", "", "", "", "", "",
-        "2", "", "", "2", "", "", "", "", "", "", "",
-        "3", "", "", "3", "", "", "", "", "", "", "",
-        "4", "", "", "3", "", "", "", "", "", "", "",
-        "5", "", "", "3", "", "", "", "", "", "", "",
-        "6", "", "", "2", "", "", "", "", "", "", "",
+        "1", "", "", "", "", "", "", "", "", "", "",
+        "2", "", "", "", "", "", "", "", "", "", "",
+        "3", "", "", "", "", "", "", "", "", "", "",
+        "4", "", "", "", "", "", "", "", "", "", "",
+        "5", "", "", "", "", "", "", "", "", "", "",
+        "6", "", "", "", "", "", "", "", "", "", "",
         "7", "", "", "", "", "", "", "", "", "", "",
-        "8", "", "", "2", "", "", "", "", "", "", "",
-        "9", "", "", "3", "", "", "", "", "", "", "",
-        "10", "", "", "3", "", "", "", "", "", "", ""
+        "8", "", "", "", "", "", "", "", "", "", "",
+        "9", "", "", "", "", "", "", "", "", "", "",
+        "10", "", "", "", "", "", "", "", "", "", ""
 
     )
     //fun getState(): LiveData<Int> = 0
@@ -68,27 +75,43 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        var GameRepoo = GameRepository.get()
-        settings = GameRepoo.currentSettings
+        var GameRepo = GameRepository.get()
+        settings = GameRepo.currentSettings
+
+        val intent = intent
+        gameID = intent.getIntExtra(GAMEID, -1)
+        if(gameID == -1){
+            gameID = GameRepo.id
+        } else {
+            GameRepo.id = gameID
+        }
+
+        //using gameID, ask server for all game info
+        //convert game boards to array of states
+            //don't show opponents ships (1's -> 0's)
+            //determine number of ships remaining for each player
+        //Handle different game states
 
         opp_Btn = findViewById(R.id.goToOpponent)
         my_Btn = findViewById(R.id.goToPlayer)
         userTurn = findViewById(R.id.userTurn)
         boardTitle = findViewById(R.id.boardTitle)
+        help = findViewById(R.id.help)
+        home = findViewById(R.id.home)
 
-        updateGameView(GameRepoo.state, GameRepoo.ships.value!!)
+        updateGameView(GameRepo.state, GameRepo.remainingShips.value!!)
 
-            GameRepoo.ships.observe(
+            GameRepo.remainingShips.observe(
             this,
             Observer { ships ->
                 ships?.let {
-                    Log.d("GameActivity","ships was changed")
+                    Log.d(TAG,"ships was changed")
                     //userTurn.text = "Place Ships:"+ (initialShips.minus(GameRepoo.ships.value!!)).toString()
-                    if(initialShips == GameRepoo.ships.value){
-                        GameRepoo.state = 1
-                        //send game board to server
+                    if(initialShips == GameRepo.remainingShips.value){
+                        GameRepo.state = 1
+                        //TODO: send game board to server
                     }
-                    updateGameView(GameRepoo.state, GameRepoo.ships.value!!)
+                    updateGameView(GameRepo.state, GameRepo.remainingShips.value!!)
 
                 }
             })
@@ -99,7 +122,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             setupBoard((playerTwoBoard))
             my_Btn.visibility= View.VISIBLE
             opp_Btn.visibility= View.INVISIBLE
-            boardTitle.text = resources.getString(R.string.opp_ships)
+            boardTitle.text = resources.getString(R.string.opponents_ships)
         }
 
         my_Btn.setOnClickListener {
@@ -113,16 +136,29 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         pressure = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
 
+        help.setOnClickListener {
+            //TODO Go to help screen
+            val intent = Intent(this, RulesActivity::class.java)
+            startActivity(intent)
+        }
+
+        home.setOnClickListener {
+            //TODO save game state
+            //TODO go to home
+            val intent = MainActivity.newIntent(this)
+            startActivity(intent)
+        }
+
     }
 
-    fun setupBoard (playerBoard: Array<String>) {
-        gridView = findViewById(R.id.gridview) as GridView
+    private fun setupBoard (playerBoard: Array<String>) {
+        gridView = findViewById(R.id.gridview)
         val adapter = SpaceAdapter(this, playerBoard)
         gridView.adapter = adapter
     }
 
     //updates the view based on the state
-    fun updateGameView (state: Int, numShips: Int) {
+    private fun updateGameView (state: Int, numShips: Int) {
         when(state){
             0 -> { //placing ships
                 userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
@@ -144,6 +180,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             }
         }
     }
+
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
 
@@ -172,4 +209,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         super.onPause()
         sensorManager.unregisterListener(this)
     }
+
+    companion object{
+        fun newIntent(packageContext: Context, id: Int): Intent {
+            return Intent(packageContext, GameActivity::class.java).apply {
+                putExtra(GAMEID, id)
+            }
+        }
+    }
+
 }

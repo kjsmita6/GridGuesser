@@ -6,7 +6,7 @@
     <string name="code">Code: </string>
     <string name="code_complete">AAAA</string>
     <string name="rules">Rules</string>
-    <string name="rulelist">1. Rule 1\n2. Rule 2\n3. Rule 3</string>
+    <string name="rulelist">1. Each player will start by placing 5 squares\n2. Each turn they can attempt to hit one of their opponents squares by clicking a point on the grid\n3. Whoever guesses the placement of all their opponents squares first wins the game</string>
     <string name="back">Back</string>
     <string name="title_subtext">A Naval Strategy Game</string>
     <string name="active_games">Active Games</string>
@@ -24,8 +24,13 @@
     <string name="switch_toggle_daylight">Toggle Daylight Sensor</string>
     <string name="switch_toggle_temp">Toggle Temperature Sensor</string>
     <string name="username">Username</string>
-    <string name="opp_ships">temp_REMOVE</string>
-    <string name="your_ships">temp_REMOVE</string>
-
+    <string name="to_player"><![CDATA[<]]></string>
+    <string name="opponents_ships">Opponents Ships</string>
+    <string name="your_ships">Your Ships</string>
+    <string name="carrier_5_spaces">Carrier - 5 Spaces</string>
+    <string name="battleship_4_spaces">Battleship - 4 Spaces</string>
+    <string name="cruiser_3_spaces">Cruiser- 3 Spaces</string>
+    <string name="submarine_3_spaces">Submarine - 3 Spaces</string>
+    <string name="destroyer_2_spaces">Destroyer - 2 Spaces</string>
 
 </resources>

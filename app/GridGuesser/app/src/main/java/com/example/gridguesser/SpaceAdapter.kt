@@ -66,7 +66,7 @@ class SpaceAdapter (
                 Log.d("SpaceAdapter", "button pressed")
                 if (GameRepoo.state == 0) {
                     squares[position] = "1"
-                    GameRepoo.ships.value = GameRepoo.ships.value?.plus(1)
+                    GameRepoo.remainingShips.value = GameRepoo.remainingShips.value?.plus(1)
                     notifyDataSetChanged()
 
                 }
