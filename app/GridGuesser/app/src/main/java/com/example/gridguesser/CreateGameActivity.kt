@@ -71,11 +71,13 @@ class CreateGameActivity : AppCompatActivity() {
                     createGame.isEnabled = false
                     waitingText.visibility = View.VISIBLE
                     waitingText.text = getString(R.string.waiting_text)
-                    val newGame = Game(responseString.get("id").asInt, codeField.text.toString(), gameRepo.currentSettings.username, "Waiting for player...", 0, 0)
+                    val newGame = Game(responseString.get("id").asInt, codeField.text.toString(), gameRepo.currentSettings.username, "Waiting for player...", 0, 0, 0, 1)
                     codeField.setText(responseString.get("code").toString().replace("\"", ""))
                     codeField.isEnabled = false
 
                     gameRepo.addGame(newGame)
+                    val intent = GameActivity.newIntent(this@CreateGameActivity, responseString.get("id").asInt)
+                    startActivity(intent)
                 } else {
                     codeField.isEnabled = true
                     createGame.isEnabled = true
