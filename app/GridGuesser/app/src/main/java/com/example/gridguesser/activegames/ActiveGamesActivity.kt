@@ -5,12 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.example.gridguesser.GameActivity
 import com.example.gridguesser.R
 
 private const val TAG = "GridGuesser"
 class ActiveGamesActivity : AppCompatActivity(), GameListFragment.Callbacks {
     override fun onGameSelected(id: Int) {
-        TODO("Not yet implemented")
+        val intent = GameActivity.newIntent(this, id)
+        startActivity(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
