@@ -50,6 +50,18 @@
             android:text="@string/switch_toggle_temp"
             android:textSize="24sp"
             app:layout_constraintTop_toBottomOf="@+id/switch2"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/username"
+            android:textSize="20dp"/>
+
+        <EditText
+            android:id="@+id/user_name"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:inputType="text"/>
     </LinearLayout>
 
     <Button

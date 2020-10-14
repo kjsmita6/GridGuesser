@@ -1,5 +1,10 @@
 package com.example.gridguesser
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,15 +15,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.example.gridguesser.database.GameRepository
+import com.example.gridguesser.database.Settings
 
 private const val TAG = "GameActivity"
 
-class GameActivity : AppCompatActivity() {
+class GameActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var gridView: GridView
     private lateinit var opp_Btn: Button
     private lateinit var my_Btn: Button
     private lateinit var userTurn: TextView
     private lateinit var boardTitle: TextView
+    private lateinit var sensorManager: SensorManager
+    private var pressure: Sensor? = null
+    private lateinit var bg: View
+    private lateinit var settings: Settings
 
     private var initialShips = 5
 
@@ -59,7 +69,7 @@ class GameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_game)
 
         var GameRepoo = GameRepository.get()
-
+        settings = GameRepoo.currentSettings
 
         opp_Btn = findViewById(R.id.goToOpponent)
         my_Btn = findViewById(R.id.goToPlayer)
@@ -99,6 +109,10 @@ class GameActivity : AppCompatActivity() {
             boardTitle.text = resources.getString(R.string.your_ships)
         }
 
+        bg = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.gameBackground)
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        pressure = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+
     }
 
     fun setupBoard (playerBoard: Array<String>) {
@@ -129,5 +143,33 @@ class GameActivity : AppCompatActivity() {
                 Log.d( TAG, "something is wrong")
             }
         }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
+
+    }
+
+    override fun onSensorChanged(event: SensorEvent) {
+
+        val light = event.values[0]
+
+        if (light < 20 && settings.use_daylight) {
+            Log.d(TAG, "Light levels below 20. Switching to dark theme")
+            bg.rootView.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
+        }
+        else {
+            Log.d(TAG, "Light levels above 20. Switching to light theme")
+            bg.rootView.setBackgroundColor(resources.getColor(android.R.color.white))
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sensorManager.registerListener(this, pressure, SensorManager.SENSOR_DELAY_NORMAL)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
     }
 }
