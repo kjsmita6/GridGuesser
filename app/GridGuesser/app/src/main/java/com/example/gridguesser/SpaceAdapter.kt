@@ -54,12 +54,17 @@ class SpaceAdapter (
                 spaceView.spaceBtn.setBackgroundColor(colorValue)
             } else if (value == "3") {
                 spaceTxt = "X"
+                "@drawable/main_menu_button"
                 val colorValue = ContextCompat.getColor(context, R.color.colorAccent)
+               // val colorValue = ContextCompat.getDrawable(context, drawable.)
                 spaceView.spaceBtn.setBackgroundColor(colorValue)
+                //spaceView.spaceBtn.setBackgroundResource(R.drawable.main_menu_button)
             }
             else {
                 val colorValue = ContextCompat.getColor(context, R.color.colorDeepBlue)
-                spaceView.spaceBtn.setBackgroundColor(colorValue)
+                //spaceView.spaceBtn.setBackgroundColor(colorValue)
+                spaceView.spaceBtn.setBackgroundResource(R.drawable.board_button)
+
             }
 
             spaceView.spaceBtn.setOnClickListener {
