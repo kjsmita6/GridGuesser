@@ -126,7 +126,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         gameRepo.remainingShips.value = -1
                         placeShips()
                     }
-                    updateGameView(gameRepo.state, gameRepo.remaZiningShips.value!!)
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
 
                 }
             })
@@ -230,13 +230,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     }
                     updateGameView(gameRepo.state, 0)
                     setupBoard(playerOneBoard)
-                    var toPrint = ""
+                    /*var toPrint = ""
                     for(i in 0 until playerOneBoard.size){
                         toPrint += playerOneBoard[i] + ""
                         if(i%11 == 0){
                             toPrint += "\n"
                         }
-                    }
+                    }*/
                 }
             }
         )
@@ -260,7 +260,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 row++
             }
         }
-        Log.d(TAG, "TO RETURN: $toReturn")
         return toReturn
     }
 
@@ -272,6 +271,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     //updates the view based on the state
     private fun updateGameView (state: Int, numShips: Int) {
+        Log.d(TAG, "STATE IS: $state")
 
         when(state){
             (-1) -> {
@@ -308,12 +308,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             else -> {
                 userTurn.text = "Turn State is Wrong"
                 Log.d( TAG, "something is wrong")
+                Log.d( TAG, "ILLEGAL STATE: $state")
+
             }
         }
     }
 
     private fun move(position: Int){
-        serverInteractions.move(gameID, deviceID, position % 11, position / 11).observe(
+        serverInteractions.move(gameID, deviceID, (position % 11)-1, (position / 11)-1).observe(
             this,
             Observer { response ->
                 response?.let {
