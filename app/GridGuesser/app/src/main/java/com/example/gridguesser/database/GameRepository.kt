@@ -9,7 +9,7 @@ import java.util.concurrent.Executors
 
 private const val TAG = "GridGuesser"
 class GameRepository private constructor(context: Context) {
-    var currentSettings: Settings = Settings(0, DeviceID.getDeviceID(context.contentResolver).substring(0, 5), 0, 0)
+    var currentSettings: Settings = Settings(0, DeviceID.getDeviceID(context.contentResolver).substring(0, 5), false, false)
     private val executor = Executors.newSingleThreadExecutor()
 
     var state = 0 // 0 - place ships, 1 - player one turn, 2- player two turn

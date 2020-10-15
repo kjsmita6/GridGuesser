@@ -21,6 +21,9 @@
     <string name="waiting_text"> Waiting for another player to join…</string>
     <string name="create_error_text">Sorry, we were unable to create your game, please try again later</string>
     <string name="join_error_text">Sorry, that game is either full or does not exist. Please try a different code</string>
+    <string name="switch_toggle_daylight">Toggle Daylight Sensor</string>
+    <string name="switch_toggle_temp">Toggle Temperature Sensor</string>
+    <string name="username">Username</string>
     <string name="to_player"><![CDATA[<]]></string>
     <string name="opponents_ships">Opponents Ships</string>
     <string name="your_ships">Your Ships</string>

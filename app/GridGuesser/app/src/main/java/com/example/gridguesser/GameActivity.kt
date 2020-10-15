@@ -1,6 +1,11 @@
 package com.example.gridguesser
 
 import android.content.Context
+
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +16,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.gridguesser.database.GameRepository
+import com.example.gridguesser.database.Settings
 import com.example.gridguesser.deviceID.DeviceID
 import com.example.gridguesser.http.ServerInteractions
 
@@ -18,17 +24,22 @@ import com.example.gridguesser.http.ServerInteractions
 private const val TAG = "GridGuesser"
 private const val GAMEID = "game_id"
 
-class GameActivity : AppCompatActivity() {
+class GameActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var gridView: GridView
     private lateinit var opp_Btn: Button
     private lateinit var my_Btn: Button
     private lateinit var userTurn: TextView
     private lateinit var boardTitle: TextView
+    private lateinit var sensorManager: SensorManager
+    private var pressure: Sensor? = null
+    private lateinit var bg: View
+    private lateinit var settings: Settings
 
     private lateinit var help: Button
     private lateinit var home: Button
 
     private var initialShips = 5
+    private var player = -1
     private var gameID: Int = -1
     private val gameRepo = GameRepository.get()
     private val serverInteractions = ServerInteractions.get()
@@ -70,6 +81,8 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+
+        settings = gameRepo.currentSettings
         deviceID = DeviceID.getDeviceID(contentResolver)
 
         val intent = intent
@@ -80,6 +93,11 @@ class GameActivity : AppCompatActivity() {
             gameRepo.id = gameID
         }
 
+<<<<<<< HEAD
+=======
+        getWhichPlayer()
+        Log.d(TAG, "plauyer is " + player)
+>>>>>>> b9a0c38df556d3d59207045b05e98f38455aa5d5
         loadBoards()
 
         //using gameID, ask server for all game info
@@ -87,7 +105,6 @@ class GameActivity : AppCompatActivity() {
             //don't show opponents ships (1's -> 0's)
             //determine number of ships remaining for each player
         //Handle different game states
-
 
         opp_Btn = findViewById(R.id.goToOpponent)
         my_Btn = findViewById(R.id.goToPlayer)
@@ -114,10 +131,11 @@ class GameActivity : AppCompatActivity() {
                 }
             })
 
-        setupBoard(playerOneBoard)
+        if (gameRepo.state == 0)
+            setupBoard(playerOneBoard)
 
         opp_Btn.setOnClickListener {
-            setupBoard((playerTwoBoard))
+            setupBoard(playerTwoBoard)
             my_Btn.visibility= View.VISIBLE
             opp_Btn.visibility= View.INVISIBLE
             boardTitle.text = resources.getString(R.string.opponents_ships)
@@ -130,6 +148,10 @@ class GameActivity : AppCompatActivity() {
             boardTitle.text = resources.getString(R.string.your_ships)
         }
 
+        bg = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.gameBackground)
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        pressure = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+
         help.setOnClickListener {
             val intent = Intent(this, RulesActivity::class.java)
             startActivity(intent)
@@ -139,6 +161,21 @@ class GameActivity : AppCompatActivity() {
             val intent = MainActivity.newIntent(this)
             startActivity(intent)
         }
+
+    }
+
+    private fun getWhichPlayer(){
+        serverInteractions.whichPlayer(deviceID, gameID).observe(
+            this,
+            Observer { response ->
+                response?.let {
+                    if(response.get("player").toString() == "1")
+                        player = 1
+                    else if(response.get("player").toString() == "2")
+                        player = 2
+                }
+            }
+        )
     }
 
     private fun placeShips(){
@@ -181,7 +218,6 @@ class GameActivity : AppCompatActivity() {
             this,
             Observer {response ->
                 response?.let {
-                    //Log.d(TAG, response.get("turn").toString())
                     gameRepo.state = response.get("turn").toString().toInt()
 
                     if(response.get("player1").toString() == deviceID){
@@ -225,7 +261,7 @@ class GameActivity : AppCompatActivity() {
 
     private fun setupBoard (playerBoard: MutableList<String>) {
         gridView = findViewById(R.id.gridview)
-        val adapter = SpaceAdapter(this, playerBoard)
+        val adapter = SpaceAdapter(this, playerBoard, player)
         gridView.adapter = adapter
     }
 
@@ -267,6 +303,43 @@ class GameActivity : AppCompatActivity() {
                 Log.d( TAG, "something is wrong")
             }
         }
+    }
+
+    private fun move(position: Int){
+        serverInteractions.move(gameID, deviceID, position % 11, position / 11).observe(
+            this,
+            Observer { response ->
+                response?.let {
+                    gameRepo.state = response.get("turn").toString().toInt()
+                }
+            }
+        )
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
+
+    }
+
+    override fun onSensorChanged(event: SensorEvent) {
+
+        val light = event.values[0]
+
+        if (light < 20 && settings.use_daylight) {
+            bg.rootView.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
+        }
+        else {
+            bg.rootView.setBackgroundColor(resources.getColor(android.R.color.white))
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sensorManager.registerListener(this, pressure, SensorManager.SENSOR_DELAY_NORMAL)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
     }
 
     companion object{
