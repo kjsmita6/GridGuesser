@@ -255,7 +255,7 @@ class ServerInteractions {
     fun move(gameID: Int, deviceID: String, x: Int, y: Int): LiveData<JsonObject> {
         val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
         val userBody = JsonObject()
-        userBody.addProperty("game", gameID)
+        userBody.addProperty("id", gameID)
         userBody.addProperty("player", deviceID)
 
         val coords = JsonObject()
