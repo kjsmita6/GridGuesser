@@ -12,8 +12,12 @@ function logPost(req) {
     logger.silly(util.parseReq('POST', req));
 }
 
-router.get('/', (req, res) => {
+function logGet(req) {
     logger.silly(util.parseReq('GET', req));
+}
+
+router.get('/', (req, res) => {
+    logGet(req);
     res.status(200).send('Success');
     return;
 });
@@ -25,6 +29,7 @@ router.post('/newgame', (req, res) => {
         code = util.generateID();
         database.runAllQuery('select * from games where code = ? and (state = 1 or state = 2)', [code], (err, rows) => {
             if (err) {
+                logger.warn(`Error getting existing games -- ${err.message}: ${err.stack}`);
                 res.status(500).json({ error: err.message });
                 res.end();
                 return;
@@ -35,9 +40,9 @@ router.post('/newgame', (req, res) => {
                 let title = req.body.title;
                 let player1 = req.body.player1;
                 database.createGame(title, code, player1, (err1, response) => {
-                    if (err1) {
-                        logger.warn(`Error creating game: ${err1.message}: ${err1.stack}`);
-                        res.status(500).json({ error: err1.message });
+                    if (err1 || !response) {
+                        logger.warn(err1 ? `Error creating game -- ${err1.message}: ${err1.stack}` : 'no rows returned');
+                        res.status(500).json({ error: err1 ? err1.message : 'no rows returned' });
                         return;
                     } else {
                         res.status(200).json({ error: null, id: response.id, code: response.code });
@@ -66,45 +71,13 @@ router.post('/newuser', (req, res) => {
     });
 });
 
-/*
-router.post('/updateboard', (req, res) => {
-    logPost(req);
-    let id = req.body.id;
-    let player1_update = req.body.player1_update;
-    let player2_update = req.body.player2_update;
-    database.getBoardsFromGame(id, (err, boards) => {
-        if (err) {
-            res.statusCode = 500;
-            res.json({
-                error: err.message
-            });
-        } else {
-            let player1_board = JSON.parse(boards.player1_board);
-            let player2_board = JSON.parse(boards.player2_board);
-            player1_board[player1_update.x][player1_update.y].state = player1_update.state;
-            player2_board[player2_update.x][player2_update.y].state = player2_update.state;
-            database.updateBoards(id, [player1_board, player2_board], (err1, rows) => {
-                if (err) {
-                    res.statusCode = 500;
-                    res.json({
-                        error: err1.message
-                    });
-                } else {
-                    res.statusCode = 200;
-                }
-            });
-        }
-        res.end();
-    });
-});
-*/
-
 router.post('/joingame', (req, res) => {
     logPost(req);
     let code = req.body.code;
     let player2 = req.body.player2;
     database.getActiveGame(code, (err, rows) => {
-        if (err) {
+        if (err || !rows) {
+            logger.warn(err ? `Error getting the active game -- ${err.message}: ${err.stack}` : 'no rows returned');
             res.status(500).json({ error: err.message });
             return;
         } else {
@@ -115,8 +88,8 @@ router.post('/joingame', (req, res) => {
                 let id = rows[0].id;
                 logger.verbose('Rows: ' + JSON.stringify(rows[0], null, 4));
                 database.getPlayerUsername(rows[0].player1, (err1, rows1) => {
-                    if (err1) {
-                        res.status(500).json({ error: err1.message });
+                    if (err1 || !rows1) {
+                        res.status(500).json({ error: err1 ? err1.message : 'no rows returned' });
                         return;
                     } else {
                         logger.verbose('Rows1: ' + JSON.stringify(rows1, null, 4));
@@ -126,6 +99,26 @@ router.post('/joingame', (req, res) => {
                             } else {
                                 logger.verbose('Rows2: ' + rows2);
                                 res.status(200).json({ error: null, id: id, title: rows[0].title, player1_username: rows1.username });
+                                database.getUserToken(rows[0].player1, (err3, rows3) => {
+                                    if (err3 || !rows3) {
+                                        logger.error(err3 ? `${err3.message}: ${err3.stack}` : 'no rows returned');
+                                    } else {
+                                        let token = rows3.token;
+                                        database.getPlayerUsername(player2, (err4, rows4) => {
+                                            if (err4 || !rows4) {
+                                                logger.error(err4 ? `${err4.message}: ${err4.stack}` : 'no rows returned');
+                                            } else {
+                                                Firebase.sendMessage(token, {
+                                                    data: {
+                                                        event: 'join',
+                                                        id: id.toString(),
+                                                        username: rows4.username
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
                             }
                         });
                     }
@@ -138,13 +131,49 @@ router.post('/joingame', (req, res) => {
 router.post('/finishgame', (req, res) => {
     logPost(req);
     let id = req.body.id;
+    let player = req.body.player;
     database.finishGame(id, (err, rows) => {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
         } else {
-            res.status(200).json({ error: null });
-
+            database.getPlayersInGame(id, (err1, rows1) => {
+                if (err1 || !rows1) {
+                    logger.warn(err1 ? `Error getting players -- ${err1.message}: ${err1.stack}` : 'no rows returned');
+                    res.status(500).json({ error: err1 ? err1.message : 'no rows returned' });
+                } else {
+                    res.status(200).json({ error: null });
+                    if (player === rows1.player1) {
+                        database.getUserToken(rows1.player2, (err2, rows2) => {
+                            if (err2 || !rows2) {
+                                logger.warn(err2 ? `Error getting tokens -- ${err2.message}: ${err2.stack}` : 'no rows returned');
+                            } else {
+                                Firebase.sendMessage(rows2.token, {
+                                    data: {
+                                        event: 'finish', 
+                                        id: id.toString()
+                                    }
+                                });
+                            }
+                        });
+                    } else if (player === rows1.player2) {
+                        database.getUserToken(rows1.player1, (err2, rows2) => {
+                            if (err2 || !rows2) {
+                                logger.warn(err2 ? `Error getting tokens -- ${err2.message}: ${err2.stack}` : 'no rows returned');
+                            } else {
+                                Firebase.sendMessage(rows2.token, {
+                                    data: {
+                                        event: 'finish',
+                                        id: id.toString()
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        logger.warn(`Unknown player ${player}`);
+                    }
+                }
+            });
         }
     });
 });
@@ -153,67 +182,45 @@ router.post('/move', (req, res) =>{
     logPost(req);
     let id = req.body.id;
     logger.verbose(id);
-    let player = req.body.player;
     let coords = req.body.coords;
     let x = coords.x;
     let y = coords.y;
     database.getBoards(id, (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
+        if (err || !rows) {
+            res.status(500).json({ error: err ? err.message : 'no rows returned' });
             return;
         } else {
-            let player1 = rows.player1;
-            let player2 = rows.player2;
             let player1_board = JSON.parse(rows.player1_board);
             let player2_board = JSON.parse(rows.player2_board);
+            let turn = ~rows.turn && 0x3;
             player1_board[x][y].state += 2;
             player2_board[x][y].state += 2;
-            //logger.verbose(JSON.stringify(player1_board, null, 4));
-            //logger.verbose(JSON.stringify(player2_board, null, 4));
-            if (player === player1) {
-                /*
-                let state = player2_board[x][y].state;
-                if (state == 0) {
-                    logger.verbose('Player 1 miss');
-                    player1_board[x][y].state = 2;
-                    player2_board[x][y].state = 2;
-                } else if (state == 1) {
-                    logger.verbose('Player 1 hit');
-                    player1_board[x][y].state = 3;
-                    player2_board[x][y].state = 3;
+            database.updateBoards(id, [JSON.stringify(player1_board), JSON.stringify(player2_board)], turn, (err1, rows1) => {
+                if (err1) {
+                    res.status(500).json({ error: err1.message });
+                } else {
+                    res.status(200).json({ error: null, x: x, y: y, state: player1_board[x][y].state, turn: turn });
+                    database.getPlayersInGame(id, (err2, rows2) => {
+                        if (err2 || !rows2) {
+                            logger.warn(err2 ? `Error getting players -- ${err2.message}: ${err2.stack}` : 'no rows returned');
+                        } else {
+                            database.getUserToken(turn === 2 ? rows2.player2 : rows2.player1, (err3, rows3) => {
+                                if (err3 || !rows3) {
+                                    logger.warn(err2 ? `Error getting player token -- ${err3.message}: ${err3.stack}` : 'no rows returned');    
+                                } else {
+                                    Firebase.sendMessage(rows3.token, {
+                                        data: {
+                                            event: 'turn',
+                                            id: id.toString(),
+                                            state: player1_board[x][y].state == 2 ? '2' : '3'
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
-                */
-                database.updateBoards(id, [JSON.stringify(player1_board), JSON.stringify(player2_board)], (err, rows) => {
-                    if (err) {
-                        res.status(500).json({ error: err.message });
-                    } else {
-                        res.status(200).json({ error: null, x: x, y: y, state: player1_board[x][y].state, turn: 2 });
-                    }
-               }); 
-            } else if (player === player2) {
-                /*
-                let state = player1_board[x][y].state;
-                if (state == 0) {
-                    logger.verbose('Player 2 miss');
-                    player1_board[x][y].state = 2;
-                    player2_board[x][y].state = 2;
-                } else if (state == 1) {
-                    logger.verbose('Player 2 hit');
-                    player1_board[x][y].state = 3;
-                    player2_board[x][y].state = 3;
-                }
-                */
-                database.updateBoards(id, [player1_board, player2_board], (err, rows) => {
-                    if (err) {
-                        res.status(500).json({ error: err.message });
-                    } else {
-                        res.status(200).json({ error: null, x: x, y: y, state: player1_board[x][y].state, turn: 1 });
-                    }
-                }); 
-            } else {
-                res.status(500).json({ error: 'ERR_MISMATCH_PLAYER' });
-                return;
-            }
+            }); 
         }
     });
 });
@@ -223,7 +230,8 @@ router.post('/updateuser', (req, res) => {
     let id = req.body.id;
     let username = req.body.username;
     let token = req.body.token;
-    database.updateUser(id, username, token, (err, rows) => {
+    //database.updateUser(id, username, token, (err, rows) => {
+    database.insertOrUpdateUser(id, username, token, (err, rows) => { 
         if (err) {
             res.status(500).json({ error: err.message });
         } else {
@@ -249,8 +257,8 @@ router.post('/whichplayer', (req, res) => {
     let game = req.body.game;
     let player = req.body.player;
     database.getPlayersInGame(game, (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
+        if (err || !rows) {
+            res.status(500).json({ error: err ? err.message : 'no rows returned' });
         } else {
             if (player === rows.player1) {
                 res.status(200).json({ error: null, player: 1 });
@@ -264,16 +272,53 @@ router.post('/whichplayer', (req, res) => {
     });
 });
 
-router.post('/makeboards', (req, res) => {
+router.post('/makeboard', (req, res) => {
     logPost(req);
     let game = req.body.game;
-    let player1_board = req.body.player1_board;
-    let player2_board = req.body.player2_board;
-    database.updateBoards(game, [player1_board, player2_board], (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
+    let player = req.body.player;
+    let board = req.body.board;
+    database.getPlayersInGame(game, (err, rows) => {
+        if (err || !rows) {
+            res.status(500).json({ error: err ? err.message : 'no rows returned' });
         } else {
-            res.status(200).json({ error: null });
+            database.updateBoard(game, player === rows.player1 ? 1 : 2, board, (err1, rows1) => {
+                if (err1) {
+                    res.status(500).json({ error: err1.message });
+                } else {
+                    res.status(200).json({ error: null });
+                    database.getUserToken(player === rows.player1 ? rows.player2 : rows.player1, (err3, rows3) => {
+                        if (err3 || !rows3) {
+                            logger.warn(err2 ? `Error getting player token -- ${err3.message}: ${err3.stack}` : 'no rows returned');    
+                        } else {
+                            Firebase.sendMessage(rows3.token, {
+                                data: {
+                                    event: 'board',
+                                    id: game.toString()
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
+
+router.post('/getboards', (req, res) => {
+    logPost(req);
+    let game = req.body.game;
+    database.getBoards(game, (err, rows) => {
+        if (err || !rows) {
+            logger.warn(err ? `Error getting boards -- ${err.message}: ${err.stack}` : 'no rows returned');
+            res.status(500).json({ error: err ? err.message : 'no rows returned' });
+        } else {
+            res.status(200).json({
+                turn: rows.turn,
+                player1: rows.player1,
+                player1_board: rows.player1_board,
+                player2: rows.player2,
+                player2_board: rows.player2_board
+            });
         }
     });
 });

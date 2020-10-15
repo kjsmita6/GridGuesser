@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const Board = require('../board');
 
-const CREATE_TABLE_GAMES = 'create table if not exists games (id int(32) not null primary key, state int(1) not null, title varchar2(32) not null, code varchar2(4) not null, player1 varchar2(32) not null, player2 varchar2(32) null, player1_board varchar(2048) not null, player2_board varchar(2048) not null, foreign key(player1) references users(id), foreign key(player2) references users(id))';
+const CREATE_TABLE_GAMES = 'create table if not exists games (id int(32) not null primary key, state int(1) not null, title varchar2(32) not null, code varchar2(4) not null, turn int(1) not null, player1 varchar2(32) not null, player2 varchar2(32) null, player1_board varchar(2048) not null, player2_board varchar(2048) not null, foreign key(player1) references users(id), foreign key(player2) references users(id))';
 const CREATE_TABLE_USERS = 'create table if not exists users (id varchar(32) not null primary key, username varchar(32) not null, token varchar(256) not null)';
 
 class Database {
@@ -76,7 +76,7 @@ class Database {
                     log.verbose('gameID is -1 or null: ' + id);
                     //callback(new Error('Unable to get game ID'), null);
                 } else {
-                    this.runFirstQuery(`insert into games (id, state, title, code, player1, player1_board, player2_board) values (?, 1, ?, ?, ?, ?, ?)`, [id, title, code, player1, new Board(), new Board()], (err, rows) => {
+                    this.runFirstQuery(`insert into games (id, state, title, code, turn, player1, player1_board, player2_board) values (?, 1, ?, ?, -1, ?, ?, ?)`, [id, title, code, player1, new Board(), new Board()], (err, rows) => {
                         callback(err, { id, code });
                     });
                 }
@@ -96,10 +96,22 @@ class Database {
         });
     }
 
-    updateBoards(id, boards, callback) {
-        this.runFirstQuery(`update games set player1_board = ?, player2_board = ? where id = ?`, [boards[0], boards[1], id], (err, rows) => {
+    updateBoards(id, boards, turn, callback) {
+        this.runFirstQuery(`update games set turn = ?, player1_board = ?, player2_board = ? where id = ?`, [turn, boards[0], boards[1], id], (err, rows) => {
             callback(err, rows);
         });
+    }
+
+    updateBoard(id, num, board, callback) {
+        if (num == 1) {
+            this.runFirstQuery(`update games set turn = turn + 1, player1_board = ? where id = ?`, [board, id], (err, rows) => {
+                callback(err, rows);
+            });
+        } else {
+            this.runFirstQuery(`update games set turn = turn + 1, player2_board = ? where id = ?`, [board, id], (err, rows) => {
+                callback(err, rows);
+            });
+        }
     }
 
     getActiveGame(code, callback) {
@@ -127,7 +139,7 @@ class Database {
     }
 
     getBoards(id, callback) {
-        this.runFirstQuery(`select player1, player2, player1_board, player2_board from games where id = ?`, [id], (err, rows) => {
+        this.runFirstQuery(`select turn, player1, player2, player1_board, player2_board from games where id = ?`, [id], (err, rows) => {
             callback(err, rows);
         });
     }
@@ -138,12 +150,23 @@ class Database {
         });
     }
 
+    insertOrUpdateUser(id, username, token, callback) {
+        this.runFirstQuery(`insert into users (id, username, token) values (?, ?, ?) on conflict(id) do update set username = ?, token = ?`, [id, username, token, username, token], (err, rows) => {
+            callback(err, rows);
+        });
+    }
+
     getPlayersInGame(game, callback) {
         this.runFirstQuery('select player1, player2 from games where id = ?', [game], (err, rows) => {
             callback(err, rows);
         });
     }
 
+    getUserToken(user, callback) {
+        this.runFirstQuery(`select token from users where id = ?`, [user], (err, rows) => {
+            callback(err, rows);
+        });
+    }
 }
 
 module.exports = Database;

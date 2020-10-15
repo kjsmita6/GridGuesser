@@ -9,13 +9,17 @@ admin.initializeApp({
 
 class Firebase {
     static sendMessage(token, payload, options) {
+        if (!options) {
+            options = {
+                priority: 'normal'
+            }
+        }
         admin.messaging().sendToDevice(token, payload, options).then(response => {
             logger.silly('Successfully sent message: ' + JSON.stringify(response));
             callback(response);
         }).catch(error => {
-            let err = JSON.stringify(error);
-            if (err !== '{}') {
-                logger.error('Error sending message: ' + JSON.stringify(error));
+            if (error) {
+                logger.error('Error sending message: ' + JSON.stringify(error, null, 4));
             }
         });
     }
