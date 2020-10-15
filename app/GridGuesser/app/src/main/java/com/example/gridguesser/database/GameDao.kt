@@ -29,6 +29,12 @@ interface GameDao {
     @Query("Update active_games SET blue_hits = blue_hits + 1 WHERE game_id = :id")
     fun updateScore2(id: String)
 
+    @Query("Update active_games SET status = status + 1 WHERE game_id = :id")
+    fun incStatus(id: String)
+
+    @Query("Update active_games SET status = 2-(status - 1) WHERE game_id = :id")
+    fun alternateTurn(id: String)
+
     @Insert
     fun addGame(game: Game)
 

@@ -3,7 +3,6 @@ package com.example.gridguesser.database
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.room.Room
 import com.example.gridguesser.deviceID.DeviceID
 import java.util.concurrent.Executors
@@ -70,6 +69,10 @@ class GameRepository private constructor(var context: Context) {
             gameDao.updateScore2(id)
         }
     }
+
+    fun incStatus(id: String) = gameDao.incStatus(id)
+
+    fun alternateTurn(id: String) = gameDao.alternateTurn(id)
 
     fun finishGame(id: String) = gameDao.finishGame(id)
 

@@ -74,10 +74,13 @@ class MessagingService: FirebaseMessagingService() {
                 val state = data["state"]
                 if(id != null && state != null && state == "3"){
                     gameRepo.updateScore(id, false)
+                    gameRepo.alternateTurn(id)
                 }
             }
             "board" -> {
-
+                if(id != null){
+                    gameRepo.incStatus(id)
+                }
             }
             else -> {
                 Log.d(TAG, "FOUND: ${data["event"]}")

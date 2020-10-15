@@ -97,8 +97,16 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             gameRepo.id = gameID
         }
 
-
         getWhichPlayer()
+
+        gameRepo.getGame(gameID.toString()).observe(
+            this,
+            Observer { thisGame ->
+                gameRepo.state = thisGame.status
+                updateGameView(gameRepo.state, 0)
+                setupBoard(playerOneBoard)
+            }
+        )
 
         //using gameID, ask server for all game info
         //convert game boards to array of states
@@ -224,6 +232,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     Log.d(TAG,"Updated board: $response")
                 }
             })
+        gameRepo.incStatus(gameID.toString())
     }
 
     private fun loadBoards(){
@@ -240,9 +249,19 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         playerOneBoard = parseBoard(response.get("player1_board").toString(), false)
                         playerTwoBoard = parseBoard(response.get("player2_board").toString(), true)
                     }
-                    updateGameView(gameRepo.state, 0)
-                    setupBoard(playerOneBoard)
+                    getGameState()
                 }
+            }
+        )
+    }
+
+    private fun getGameState(){
+        gameRepo.getGame(gameID.toString()).observe(
+            this,
+            Observer { thisGame ->
+                gameRepo.state = thisGame.status
+                updateGameView(gameRepo.state, 0)
+                setupBoard(playerOneBoard)
             }
         )
     }
@@ -325,6 +344,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             Observer { response ->
                 response?.let {
                     gameRepo.state = response.get("turn").toString().toInt()
+                    playerTwoBoard[position] = response.get("state").toString()
+                    if(response.get("state").toString() == "2"){
+                        gameRepo.alternateTurn(gameID.toString())
+                    }
                     updateGameView(gameRepo.state, 0)
                 }
             }
