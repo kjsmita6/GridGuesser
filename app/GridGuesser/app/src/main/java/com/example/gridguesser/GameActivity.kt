@@ -297,13 +297,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
             2-> {
                 if(player == 2){
-                    userTurn.text = "Player Two's Turn"
-                }
-                else{
                     userTurn.text = "Your Turn"
                 }
-//                my_Btn.visibility = View.VISIBLE
-//                opp_Btn.visibility = View.INVISIBLE
+                else{
+                    userTurn.text = "Player Two's Turn"
+                }
+                my_Btn.visibility = View.VISIBLE
+                opp_Btn.visibility = View.INVISIBLE
             }
             else -> {
                 userTurn.text = "Turn State is Wrong"
