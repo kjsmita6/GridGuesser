@@ -33,6 +33,7 @@ class GameActivity : AppCompatActivity() {
     private val gameRepo = GameRepository.get()
     private val serverInteractions = ServerInteractions.get()
     private lateinit var deviceID: String
+    private var isPlayerOne = true
 
     private var playerOneBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
@@ -55,7 +56,7 @@ class GameActivity : AppCompatActivity() {
         "2", "", "", "", "", "", "", "", "", "", "",
         "3", "", "", "", "", "", "", "", "", "", "",
         "4", "", "", "", "", "", "", "", "", "", "",
-        "5", "", "", "", "", "", "", "1", "", "", "",
+        "5", "", "", "", "", "", "", "", "", "", "",
         "6", "", "", "", "", "", "", "", "", "", "",
         "7", "", "", "", "", "", "", "", "", "", "",
         "8", "", "", "", "", "", "", "", "", "", "",
@@ -79,7 +80,7 @@ class GameActivity : AppCompatActivity() {
             gameRepo.id = gameID
         }
 
-        //loadBoards()
+        loadBoards()
 
         //using gameID, ask server for all game info
         //convert game boards to array of states
@@ -99,7 +100,7 @@ class GameActivity : AppCompatActivity() {
 
             gameRepo.remainingShips.observe(
             this,
-            Observer { ships ->
+            Observer { ships -> //TODO: change this to change state to be one from firebase message
                 ships?.let {
                     Log.d(TAG,"ships was changed")
                     //userTurn.text = "Place Ships:"+ (initialShips.minus(GameRepoo.ships.value!!)).toString()
@@ -130,14 +131,11 @@ class GameActivity : AppCompatActivity() {
         }
 
         help.setOnClickListener {
-            //TODO Go to help screen
             val intent = Intent(this, RulesActivity::class.java)
             startActivity(intent)
         }
 
         home.setOnClickListener {
-            //TODO save game state
-            //TODO go to home
             val intent = MainActivity.newIntent(this)
             startActivity(intent)
         }
@@ -183,6 +181,9 @@ class GameActivity : AppCompatActivity() {
             this,
             Observer {response ->
                 response?.let {
+                    //Log.d(TAG, response.get("turn").toString())
+                    gameRepo.state = response.get("turn").toString().toInt()
+
                     if(response.get("player1").toString() == deviceID){
                         playerOneBoard = parseBoard(response.get("player1_board").toString())
                         playerTwoBoard = parseBoard(response.get("player2_board").toString())
@@ -231,18 +232,34 @@ class GameActivity : AppCompatActivity() {
     //updates the view based on the state
     private fun updateGameView (state: Int, numShips: Int) {
         when(state){
+            (-1) -> {
+                userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
+                opp_Btn.visibility= View.INVISIBLE
+                my_Btn.visibility= View.INVISIBLE
+            }
             0 -> { //placing ships
                 userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
                 opp_Btn.visibility= View.INVISIBLE
                 my_Btn.visibility= View.INVISIBLE
             }
             1 -> {
-                userTurn.text = "Player One's Turn"
+                //if this player is player one
+                if(isPlayerOne){
+                    userTurn.text = "Your Turn"
+                }
+                else{
+                    userTurn.text = "Player One's Turn"
+                }
                 opp_Btn.visibility = View.VISIBLE
                 my_Btn.visibility = View.INVISIBLE
             }
             2-> {
-                userTurn.text = "Player Two's Turn"
+                if(isPlayerOne){
+                    userTurn.text = "Player Two's Turn"
+                }
+                else{
+                    userTurn.text = "Your Turn"
+                }
 //                my_Btn.visibility = View.VISIBLE
 //                opp_Btn.visibility = View.INVISIBLE
             }

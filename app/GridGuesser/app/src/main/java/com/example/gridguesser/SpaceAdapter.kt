@@ -12,9 +12,9 @@ import kotlinx.android.synthetic.main.square.view.*
 
 class SpaceAdapter (
     private val context: Context?,
-    private val squares: MutableList<String>
+    private val squares_1: MutableList<String>
 ) : BaseAdapter() {
-    private val squareList = squares
+    private val squareList = squares_1
 
     override fun getCount(): Int {
         return squareList.size
@@ -43,7 +43,9 @@ class SpaceAdapter (
             if (value == "0") {
                 spaceTxt = ""
                 val colorValue = ContextCompat.getColor(context, R.color.colorDeepBlue)
-                spaceView.spaceBtn.setBackgroundColor(colorValue)
+                //spaceView.spaceBtn.setBackgroundColor(colorValue)
+                spaceView.spaceBtn.setBackgroundResource(R.drawable.board_button)
+
             } else if (value == "1") {
                 spaceTxt = ""
                 val colorValue = ContextCompat.getColor(context, R.color.colorAccent)
@@ -54,7 +56,6 @@ class SpaceAdapter (
                 spaceView.spaceBtn.setBackgroundColor(colorValue)
             } else if (value == "3") {
                 spaceTxt = "X"
-                "@drawable/main_menu_button"
                 val colorValue = ContextCompat.getColor(context, R.color.colorAccent)
                // val colorValue = ContextCompat.getDrawable(context, drawable.)
                 spaceView.spaceBtn.setBackgroundColor(colorValue)
@@ -69,8 +70,8 @@ class SpaceAdapter (
 
             spaceView.spaceBtn.setOnClickListener {
                 Log.d("SpaceAdapter", "button pressed")
-                if (gameRepo.state == 0) {
-                    squares[position] = "1"
+                if (gameRepo.state == 0 || gameRepo.state == (-1)) {
+                    squares_1[position] = "1"
                     gameRepo.remainingShips.value = gameRepo.remainingShips.value?.plus(1)
                     notifyDataSetChanged()
 
