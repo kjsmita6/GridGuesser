@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                         settingsRepo.addSettings(settingsRepo.currentSettings)
                         findViewById<TextView>(R.id.user_welcome).text = "Welcome, ${settingsRepo.currentSettings.username}"
                         if (token != null) {
-                            serverInteractions.addUser(deviceID, token)
+                            serverInteractions.updateUser(deviceID, settingsRepo.currentSettings.username, token)
                         }
                     } else {
                         settingsRepo.currentSettings = responseList[0]
