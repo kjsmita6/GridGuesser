@@ -53,16 +53,14 @@ class SpaceAdapter (
         if ((position> 11) && (position % 11 != 0)) { // ignore first row and column
             //create buttons based on value in array
                 if (value == "0") {
-                    val colorValue = ContextCompat.getColor(context, R.color.colorDeepBlue)
-                    spaceView.spaceBtn.setBackgroundColor(colorValue)
+                    spaceView.spaceBtn.setBackgroundResource(R.drawable.board_button)
                     spaceTxt = ""
                 } else if (value == "1") {
                     val colorValue = ContextCompat.getColor(context, R.color.colorAccent)
                     spaceView.spaceBtn.setBackgroundColor(colorValue)
                     spaceTxt = ""
                 } else if (value == "2") {
-                    val colorValue = ContextCompat.getColor(context, R.color.colorDeepBlue)
-                    spaceView.spaceBtn.setBackgroundColor(colorValue)
+                    spaceView.spaceBtn.setBackgroundResource(R.drawable.board_button)
                     spaceTxt = "X"
                 } else if (value == "3") {
                     val colorValue = ContextCompat.getColor(context, R.color.colorAccent)
@@ -70,8 +68,7 @@ class SpaceAdapter (
                     spaceTxt = "X"
                 }
                 else {
-                    val colorValue = ContextCompat.getColor(context, R.color.colorDeepBlue)
-                    spaceView.spaceBtn.setBackgroundColor(colorValue)
+                    spaceView.spaceBtn.setBackgroundResource(R.drawable.board_button)
                 }
 
             spaceView.spaceBtn.setOnClickListener {

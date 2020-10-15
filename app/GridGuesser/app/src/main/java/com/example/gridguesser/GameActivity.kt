@@ -232,11 +232,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     gameRepo.state = response.get("turn").toString().toInt()
 
                     if(response.get("player1").toString() == deviceID){
-                        playerOneBoard = parseBoard(response.get("player1_board").toString())
-                        playerTwoBoard = parseBoard(response.get("player2_board").toString())
+                        playerOneBoard = parseBoard(response.get("player1_board").toString(), true)
+                        playerTwoBoard = parseBoard(response.get("player2_board").toString(), false)
                     } else {
-                        playerOneBoard = parseBoard(response.get("player1_board").toString())
-                        playerTwoBoard = parseBoard(response.get("player2_board").toString())
+                        playerOneBoard = parseBoard(response.get("player1_board").toString(), false)
+                        playerTwoBoard = parseBoard(response.get("player2_board").toString(), true)
                     }
                     updateGameView(gameRepo.state, 0)
                     setupBoard(playerOneBoard)
@@ -245,13 +245,17 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         )
     }
 
-    private fun parseBoard(board: String): MutableList<String>{
+    private fun parseBoard(board: String, isThisPlayer: Boolean): MutableList<String>{
         var toReturn: MutableList<String> = mutableListOf(" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "1")
         val splitBoard = board.split(":")
         var row = 2
         for(i in 1 until splitBoard.size){
             if(i % 3 == 0){
-                toReturn.add(splitBoard[i][0].toString())
+                var value = splitBoard[i][0].toString()
+                if(!isThisPlayer && (value=="1")){
+                    value = "0"
+                }
+                toReturn.add(value)
             }
 
             if(i % 30 == 0 && row < 11){
@@ -279,7 +283,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 my_Btn.visibility= View.INVISIBLE
             }
             0 -> { //placing ships
-                userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
+                userTurn.text = "Waiting for other player to place ships".toString()
                 opp_Btn.visibility= View.INVISIBLE
                 my_Btn.visibility= View.INVISIBLE
             }
@@ -296,16 +300,19 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
             2-> {
                 if(player == 2){
-                    userTurn.text = "Player Two's Turn"
-                }
-                else{
                     userTurn.text = "Your Turn"
                 }
-//                my_Btn.visibility = View.VISIBLE
-//                opp_Btn.visibility = View.INVISIBLE
+                else{
+                    userTurn.text = "Player Two's Turn"
+                }
+                my_Btn.visibility = View.VISIBLE
+                opp_Btn.visibility = View.INVISIBLE
             }
             else -> {
+                userTurn.text = "Turn State is Wrong"
+                Log.d( TAG, "something is wrong")
                 Log.d( TAG, "ILLEGAL STATE: $state")
+
             }
         }
     }
