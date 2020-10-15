@@ -162,6 +162,16 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             startActivity(intent)
         }
 
+        gameRepo.changeFlag.observe(
+            this,
+            Observer {
+                if(gameRepo.event == "turn"){
+                    gameRepo.state = player
+                    updateGameView(gameRepo.state, 0)
+                }
+            }
+        )
+
     }
 
     private fun getWhichPlayer(){
@@ -313,6 +323,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             Observer { response ->
                 response?.let {
                     gameRepo.state = response.get("turn").toString().toInt()
+                    updateGameView(gameRepo.state, 0)
                 }
             }
         )

@@ -83,7 +83,7 @@ class MessagingService: FirebaseMessagingService() {
                 Log.d(TAG, "FOUND: ${data["event"]}")
             }
         }
-        gameRepo.changeFlag = true
+        data["event"]?.let { gameRepo.updateEvent(it) }
     }
 
     private fun sendRegistrationToServer(token: String?) {

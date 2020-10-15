@@ -17,10 +17,11 @@ class GameRepository private constructor(var context: Context) {
     var id = -1
     var remainingShips = MutableLiveData<Int>();
 
-    var changeFlag = false
+    var changeFlag = MutableLiveData<Boolean>(false)
+    var event: String = ""
 
     init{
-        remainingShips.value = 0;
+        remainingShips.value = 0
     }
 
     private val database : GameDatabase = Room.databaseBuilder(
@@ -47,6 +48,11 @@ class GameRepository private constructor(var context: Context) {
                 ?:
                 throw IllegalStateException("CrimeRepository must be initialized")
         }
+    }
+
+    fun updateEvent(e: String){
+        event = e
+        changeFlag.postValue(true)
     }
 
     fun getGames(): LiveData<List<Game>> = gameDao.getGames()
