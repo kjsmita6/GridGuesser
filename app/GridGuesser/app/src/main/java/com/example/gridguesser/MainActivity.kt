@@ -25,6 +25,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingsRepo: GameRepository
     private lateinit var serverInteractions: ServerInteractions
     private lateinit var deviceID: String
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "INTENT: ${intent.extras} AND ${intent.getStringExtra("Heck")}")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         val token = FirebaseInstanceId.getInstance().token
         Log.d(TAG, "Registration Token: = $token")
+        Log.d(TAG, "CREATE INTENT: $intent")
 
         serverInteractions = ServerInteractions.get()
         try {
@@ -102,6 +109,12 @@ class MainActivity : AppCompatActivity() {
     companion object {
         fun newIntent(packageContext: Context): Intent {
             return Intent(packageContext, MainActivity::class.java)
+        }
+
+        fun newIntent(packageContext: Context, data: String): Intent {
+            return Intent(packageContext, MainActivity::class.java).apply {
+                putExtra("Heck", data)
+            }
         }
     }
 }

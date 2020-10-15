@@ -27,7 +27,7 @@ interface ServerAPI {
     @POST("getboards")
     fun getBoards(@Body game: JsonObject): Call<JsonObject>
 
-    @GET("whichplayer")
+    @POST("whichplayer")
     fun getPlayer(@Body user: JsonObject): Call<JsonObject>
 
     @POST("move")
