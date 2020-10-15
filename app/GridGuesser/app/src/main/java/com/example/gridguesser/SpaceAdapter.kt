@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import androidx.core.content.ContextCompat
+import com.example.gridguesser.activegames.GameListFragment
 import com.example.gridguesser.database.GameRepository
 import com.example.gridguesser.http.ServerInteractions
 import kotlinx.android.synthetic.main.square.view.*
-import java.util.Observer
 
 private const val TAG = "GridGuesser"
 
@@ -19,6 +19,16 @@ class SpaceAdapter (
     private val squares: MutableList<String>,
     private val player: Int
 ) : BaseAdapter() {
+
+    interface Callbacks {
+        fun onSquareSelected(position: Int)
+    }
+
+    private var callbacks: Callbacks? = null
+
+    init{
+        callbacks = context as Callbacks?
+    }
 
     override fun getCount(): Int {
         return squares.size
@@ -69,34 +79,28 @@ class SpaceAdapter (
                     gameRepo.remainingShips.value = gameRepo.remainingShips.value?.plus(1)
                     notifyDataSetChanged()
                 }
-                else if (gameRepo.state == 1){
+                else if (gameRepo.state == player){
                     Log.d(TAG, "state not 0")
-                    for (i in squares){
-                        if (i == "0"){
-                            //MISS! send move and change color to miss
-                            Log.d(TAG, "MISS!")
-                            //Somehow call game activity move?
-                        } else if (i == "1") {
-                            //HIT! send move and change color to ship hit
-                            Log.d(TAG, "HIT!")
-                            //somehow call game activity move?
-                        } else if (i == "2") {
+                    val i = squares[position]
+                    when (i) {
+                        "0" -> {
+                            callbacks?.onSquareSelected(position)
+                        }
+                        "1" -> {
+                            callbacks?.onSquareSelected(position)
+                        }
+                        "2" -> {
                             //Cannot move here!
-                        } else if (i == "3") {
+                        }
+                        "3" -> {
                             //Cannot move here!
-                        } else {
+                        }
+                        else -> {
                         }
                     }
+
                     //TODO: check if there is a ship on player two's board
                     //TODO: send player one's move to server
-                }
-                else {
-                    for (i in squares){
-
-                    }
-                    Log.d(TAG, "not 1")
-                    //TODO: check if there is a ship on player one's board
-                    //TODO: send player two's move to server
                 }
             }
         }

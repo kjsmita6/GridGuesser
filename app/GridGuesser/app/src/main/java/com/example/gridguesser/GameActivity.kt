@@ -24,7 +24,7 @@ import com.example.gridguesser.http.ServerInteractions
 private const val TAG = "GridGuesser"
 private const val GAMEID = "game_id"
 
-class GameActivity : AppCompatActivity(), SensorEventListener {
+class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Callbacks {
     private lateinit var gridView: GridView
     private lateinit var opp_Btn: Button
     private lateinit var my_Btn: Button
@@ -77,6 +77,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     )
     //fun getState(): LiveData<Int> = 0
 
+    override fun onSquareSelected(position: Int) {
+        move(position)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,8 +99,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
 
 
         getWhichPlayer()
-        Log.d(TAG, "player is " + player)
-        loadBoards()
 
         //using gameID, ask server for all game info
         //convert game boards to array of states
@@ -124,7 +126,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
                         gameRepo.remainingShips.value = -1
                         placeShips()
                     }
-                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                    updateGameView(gameRepo.state, gameRepo.remaZiningShips.value!!)
 
                 }
             })
@@ -171,7 +173,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
                         player = 1
                     else if(response.get("player").toString() == "2")
                         player = 2
+                    Log.d(TAG, "player is $player")
                 }
+                loadBoards()
             }
         )
     }
@@ -201,7 +205,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             }
         }
         board += "]"
-        Log.d(TAG, board)
         serverInteractions.makeBoard(gameID, deviceID, board).observe(
             this,
             Observer { response ->
@@ -225,6 +228,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
                         playerOneBoard = parseBoard(response.get("player1_board").toString(), false)
                         playerTwoBoard = parseBoard(response.get("player2_board").toString(), true)
                     }
+                    updateGameView(gameRepo.state, 0)
                     setupBoard(playerOneBoard)
                     var toPrint = ""
                     for(i in 0 until playerOneBoard.size){
@@ -233,7 +237,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
                             toPrint += "\n"
                         }
                     }
-                    Log.d(TAG, "TO PRINT: $toPrint")
                 }
             }
         )
@@ -269,6 +272,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
 
     //updates the view based on the state
     private fun updateGameView (state: Int, numShips: Int) {
+
         when(state){
             (-1) -> {
                 userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
@@ -302,6 +306,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
 //                opp_Btn.visibility = View.INVISIBLE
             }
             else -> {
+                userTurn.text = "Turn State is Wrong"
                 Log.d( TAG, "something is wrong")
             }
         }
