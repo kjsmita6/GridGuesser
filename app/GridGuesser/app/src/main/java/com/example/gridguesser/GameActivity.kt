@@ -85,6 +85,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        Log.d(TAG, "CREATING GAME ACTIVITY")
 
         settings = gameRepo.currentSettings
         deviceID = DeviceID.getDeviceID(contentResolver)
@@ -103,8 +104,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             this,
             Observer { thisGame ->
                 gameRepo.state = thisGame.status
-                updateGameView(gameRepo.state, 0)
-                setupBoard(playerOneBoard)
+                Log.d(TAG, "INITIAL STATUS: ${gameRepo.state}")
+                updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                setupBoard(playerOneBoard, 1)
             }
         )
 
@@ -121,7 +123,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             this,
             Observer { ships ->
                 ships?.let {
-                    Log.d(TAG,"ships was changed")
+                    Log.d(TAG,"#SHIPS WAS CHANGED")
                     if(initialShips == gameRepo.remainingShips.value){ //if this player has finished placing their ships
                         gameRepo.state += 1 //increment state (goes to 0 if other player hasn't finished with their ships, 1 otherwise)
                         gameRepo.remainingShips.value = -1
@@ -132,18 +134,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 }
             })
 
-//        if (gameRepo.state == 0)
-//            setupBoard(playerOneBoard)
-
         opp_Btn.setOnClickListener {
-            setupBoard(playerTwoBoard)
+            setupBoard(playerTwoBoard, 2)
             my_Btn.visibility= View.VISIBLE
             opp_Btn.visibility= View.INVISIBLE
             boardTitle.text = resources.getString(R.string.opponents_ships)
         }
 
         my_Btn.setOnClickListener {
-            setupBoard(playerOneBoard)
+            setupBoard(playerOneBoard, 1)
             opp_Btn.visibility = View.VISIBLE
             my_Btn.visibility = View.INVISIBLE
             boardTitle.text = resources.getString(R.string.your_ships)
@@ -170,9 +169,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     gameRepo.state = player
                     updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                     loadBoards()
+                    setupBoard(playerOneBoard, 1)
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                 } else if(gameRepo.eventID == gameID && gameRepo.event == "board"){ //if the other player finished placing their ships
                     gameRepo.state += 1
-                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                    if(gameRepo.state != 0){
+                        updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                    }
                 }
             }
         )
@@ -224,7 +227,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             this,
             Observer { response ->
                 response?.let {
-                    Log.d(TAG,"Updated board: $response")
+                    Log.d(TAG,"SENT BOARD: $response")
                 }
             })
         gameRepo.incStatus(gameID.toString())
@@ -235,31 +238,22 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             this,
             Observer {response ->
                 response?.let {
+                    Log.d(TAG, "LOADING: $response")
                     gameRepo.state = response.get("turn").toString().toInt()
 
                     if(response.get("player1").toString() == deviceID){
                         playerOneBoard = parseBoard(response.get("player1_board").toString(), true)
                         playerTwoBoard = parseBoard(response.get("player2_board").toString(), false)
                     } else {
-                        playerOneBoard = parseBoard(response.get("player1_board").toString(), false)
-                        playerTwoBoard = parseBoard(response.get("player2_board").toString(), true)
+                        playerTwoBoard = parseBoard(response.get("player1_board").toString(), false)
+                        playerOneBoard = parseBoard(response.get("player2_board").toString(), true)
                     }
-                    getGameState()
                 }
             }
         )
     }
 
-    private fun getGameState(){
-        gameRepo.getGame(gameID.toString()).observe(
-            this,
-            Observer { thisGame ->
-                gameRepo.state = thisGame.status
-                updateGameView(gameRepo.state, 0)
-                setupBoard(playerOneBoard)
-            }
-        )
-    }
+
     //change server board style to be the gridview style
     private fun parseBoard(board: String, isThisPlayer: Boolean): MutableList<String>{
         var toReturn: MutableList<String> = mutableListOf(" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "1")
@@ -282,9 +276,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         return toReturn
     }
 
-    private fun setupBoard (playerBoard: MutableList<String>) {
+    private fun setupBoard (playerBoard: MutableList<String>, whichBoard: Int) {
         gridView = findViewById(R.id.gridview)
-        val adapter = SpaceAdapter(this, playerBoard, player, 1)
+        val adapter = SpaceAdapter(this, playerBoard, player, whichBoard)
         gridView.adapter = adapter
     }
 
@@ -340,6 +334,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             this,
             Observer { response ->
                 response?.let {
+                    Log.d(TAG, "MOVE RESPONSE: $response")
                     gameRepo.state = response.get("turn").toString().toInt()
                     playerTwoBoard[position] = response.get("state").toString()
                     if(response.get("state").toString() == "2"){
