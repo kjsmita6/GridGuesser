@@ -1,6 +1,5 @@
 package com.example.gridguesser.firebase
 
-import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -9,16 +8,17 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.work.OneTimeWorkRequest
 import com.example.gridguesser.MainActivity
 import com.example.gridguesser.R
 import com.example.gridguesser.database.GameRepository
+import com.example.gridguesser.deviceID.DeviceID
+import com.example.gridguesser.http.ServerInteractions
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
 const val TAG = "GridGuesser"
+const val NOTIFICATION_CHANNEL_ID = "10101"
 class MessagingService: FirebaseMessagingService() {
     private var gameRepo: GameRepository = GameRepository.get()
 
@@ -28,36 +28,22 @@ class MessagingService: FirebaseMessagingService() {
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: " + remoteMessage.data)
-            if ( /* Check if data needs to be processed by long running job */true) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                scheduleJob()
-            } else {
-                // Handle message within 10 seconds
-                handleNow()
-            }
+            handleNow(remoteMessage.data)
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.notification != null) {
             Log.d(
                 TAG,
-                "Message Notification Body: " + remoteMessage.notification!!.body
+                "Message Notification: " + remoteMessage.notification
             )
 
-            val runningAppProcessInfo = ActivityManager.RunningAppProcessInfo()
-            ActivityManager.getMyMemoryState(runningAppProcessInfo)
-            val appRunningBackground = runningAppProcessInfo.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-            if (appRunningBackground) {
-                Log.d(TAG, "APP RUNNING IN BACKGROUND")
-                remoteMessage.notification!!.body?.let { remoteMessage.notification!!.title?.let { it1 ->
-                    sendNotification(it,
-                        it1
-                    )
-                } }
-            }
-            else {
-                Log.d(TAG, "APP RUNNING IN FOREGROUND")
-            }
+            remoteMessage.notification!!.body?.let { remoteMessage.notification!!.title?.let { it1 ->
+                sendNotification(
+                    it,
+                    it1
+                )
+            } }
 
         }
 
@@ -70,31 +56,54 @@ class MessagingService: FirebaseMessagingService() {
         sendRegistrationToServer(token)
     }
 
-    private fun scheduleJob() {
-        Log.d(TAG, "Long-running task is done")
-        // [START dispatch_job]
-        //val work = OneTimeWorkRequest.Builder(MyWorker::class.java).build()
-        //WorkManager.getInstance().beginWith(work).enqueue()
-        // [END dispatch_job]
-    }
+    private fun handleNow(data: MutableMap<String, String>) {
+        val id = data["id"]
+        when (data["event"]){
+            "join" -> {
+                val username = data["username"]
+                if (id != null && username != null) {
+                    gameRepo.updateUserName(id, username)
+                }
+            }
+            "finished" -> {
+                if (id != null) {
+                    gameRepo.finishGame(id)
+                }
+            }
+            "turn" -> {
+                val state = data["state"]
+                if(id != null && state != null && state == "3"){
+                    gameRepo.updateScore(id, false)
+                }
+            }
+            "board" -> {
 
-    private fun handleNow() {
-        Log.d(TAG, "Short lived task is done.")
+            }
+            else -> {
+                Log.d(TAG, "FOUND: ${data["event"]}")
+            }
+        }
+        gameRepo.changeFlag = true
     }
 
     private fun sendRegistrationToServer(token: String?) {
-        // TODO: Implement this method to send token to your app server.
+        val serverInteractions = ServerInteractions.get()
+        if (token != null) {
+            serverInteractions.updateUser(DeviceID.getDeviceID(contentResolver), gameRepo.currentSettings.username, token)
+        }
         Log.d(TAG, "sendRegistrationTokenToServer($token)")
     }
 
     private fun sendNotification(messageBody: String, title: String) {
         Log.d(TAG, "$title: $messageBody")
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = MainActivity.newIntent(this)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT)
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
 
-        val channelId = "hello"
+        val channelId = NOTIFICATION_CHANNEL_ID
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -108,12 +117,16 @@ class MessagingService: FirebaseMessagingService() {
 
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId,
-                "Channel human readable title",
-                NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(
+                channelId,
+                "Default Channel",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
             notificationManager.createNotificationChannel(channel)
         }
 
+
         notificationManager.notify(0, notificationBuilder.build())
     }
+
 }

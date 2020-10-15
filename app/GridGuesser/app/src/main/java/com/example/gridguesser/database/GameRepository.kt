@@ -3,6 +3,7 @@ package com.example.gridguesser.database
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.room.Room
 import com.example.gridguesser.deviceID.DeviceID
 import java.util.concurrent.Executors
@@ -15,6 +16,8 @@ class GameRepository private constructor(context: Context) {
     var state = 0 // 0 - place ships, 1 - player one turn, 2- player two turn
     var id = -1
     var remainingShips = MutableLiveData<Int>();
+
+    var changeFlag = false
 
     init{
         remainingShips.value = 0;
@@ -48,6 +51,20 @@ class GameRepository private constructor(context: Context) {
 
     fun getGames(): LiveData<List<Game>> = gameDao.getGames()
 
+    fun getGame(id: String): LiveData<Game> = gameDao.getGame(id)
+
+    fun updateUserName(id: String, uname: String) = gameDao.updateUserName(id, uname)
+
+    fun updateScore(id: String, player1: Boolean) {
+        if(player1) {
+            gameDao.updateScore(id)
+        } else {
+            gameDao.updateScore2(id)
+        }
+    }
+
+    fun finishGame(id: String) = gameDao.finishGame(id)
+
     fun updateGame(game: Game) {
         executor.execute {
             gameDao.updateGame(game)
@@ -73,4 +90,5 @@ class GameRepository private constructor(context: Context) {
             gameDao.addSettings(settings)
         }
     }
+
 }

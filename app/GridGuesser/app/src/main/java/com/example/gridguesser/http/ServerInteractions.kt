@@ -18,8 +18,9 @@ private const val TAG = "GridGuesser"
 class ServerInteractions {
 
     private val serverAPI: ServerAPI
-    private val url: String = "http://68.186.247.90:8080/"
-    //private val url: String = "http://192.168.1.192:8080/"
+    //private val url: String = "http://68.186.247.90:8080/"
+    private val url: String = "http://192.168.1.192:8080/"
+>>>>>>> 84bfa53a68dab6ceeeaa525af4085a80d2663776
     var serverStatus: LiveData<Boolean>
 
     init {
