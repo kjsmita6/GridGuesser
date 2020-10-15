@@ -60,7 +60,7 @@ class CreateGameActivity : AppCompatActivity() {
         gameRepo.changeFlag.observe(
             this,
             Observer {
-                if(gameRepo.id == gameID && gameRepo.event == "turn"){
+                if(gameRepo.eventID == gameID && gameRepo.event == "join"){
                     userJoined()
                 }
             }

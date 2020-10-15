@@ -19,6 +19,7 @@ class GameRepository private constructor(var context: Context) {
 
     var changeFlag = MutableLiveData<Boolean>(false)
     var event: String = ""
+    var eventID: Int = -1
 
     init{
         remainingShips.value = 0
@@ -52,7 +53,7 @@ class GameRepository private constructor(var context: Context) {
 
     fun updateEvent(e: String, gameID: String){
         event = e
-        id = gameID.toInt()
+        eventID = gameID.toInt()
         changeFlag.postValue(true)
     }
 

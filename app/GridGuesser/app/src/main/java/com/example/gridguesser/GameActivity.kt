@@ -117,12 +117,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
             gameRepo.remainingShips.observe(
             this,
-            Observer { ships -> //TODO: change this to change state to be one from firebase message
+            Observer { ships ->
                 ships?.let {
                     Log.d(TAG,"ships was changed")
-                    //userTurn.text = "Place Ships:"+ (initialShips.minus(GameRepoo.ships.value!!)).toString()
-                    if(initialShips == gameRepo.remainingShips.value){
-                        gameRepo.state = 1
+                    if(initialShips == gameRepo.remainingShips.value){ //if this player has finished placing their ships
+                        gameRepo.state += 1 //increment state (goes to 0 if other player hasn't finished with their ships, 1 otherwise)
                         gameRepo.remainingShips.value = -1
                         placeShips()
                     }
@@ -165,9 +164,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         gameRepo.changeFlag.observe(
             this,
             Observer {
-                if(gameRepo.id == gameID && gameRepo.event == "turn"){
+                if(gameRepo.eventID == gameID && gameRepo.event == "turn"){ //if the other player took their turn
                     gameRepo.state = player
-                    updateGameView(gameRepo.state, 0)
+                    loadBoards()
+                } else if(gameRepo.eventID == gameID && gameRepo.event == "board"){ //if the other player finished placing their ships
+                    gameRepo.state += 1
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                 }
             }
         )
