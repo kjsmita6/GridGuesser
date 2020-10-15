@@ -1,5 +1,6 @@
 package com.example.gridguesser.firebase
 
+import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -8,6 +9,7 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.work.OneTimeWorkRequest
 import com.example.gridguesser.MainActivity
@@ -41,11 +43,21 @@ class MessagingService: FirebaseMessagingService() {
                 TAG,
                 "Message Notification Body: " + remoteMessage.notification!!.body
             )
-            remoteMessage.notification!!.body?.let { remoteMessage.notification!!.title?.let { it1 ->
-                sendNotification(it,
-                    it1
-                )
-            } }
+
+            val runningAppProcessInfo = ActivityManager.RunningAppProcessInfo()
+            ActivityManager.getMyMemoryState(runningAppProcessInfo)
+            val appRunningBackground = runningAppProcessInfo.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+            if (appRunningBackground) {
+                Log.d(TAG, "APP RUNNING IN BACKGROUND")
+                remoteMessage.notification!!.body?.let { remoteMessage.notification!!.title?.let { it1 ->
+                    sendNotification(it,
+                        it1
+                    )
+                } }
+            }
+            else {
+                Log.d(TAG, "APP RUNNING IN FOREGROUND")
+            }
 
         }
 

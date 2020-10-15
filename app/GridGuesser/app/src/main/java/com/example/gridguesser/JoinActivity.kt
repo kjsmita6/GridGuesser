@@ -64,8 +64,10 @@ class JoinActivity : AppCompatActivity() {
                 Log.d(TAG, "Response received: $responseString")
                 if(responseString?.get("error") != null){
                     val newGame = Game(responseString.get("id").asInt, responseString.get("title").toString(),
-                        responseString.get("player1").toString(), gameRepo.currentSettings.username, 0, 0)
+                        responseString.get("player1_username").toString(), gameRepo.currentSettings.username, 0, 0, 0, 0)
                     gameRepo.addGame(newGame)
+                    val intent = GameActivity.newIntent(this@JoinActivity, responseString.get("id").asInt)
+                    startActivity(intent)
                 } else {
                     errorLabel.visibility = View.VISIBLE
                     joinButton.isEnabled = true

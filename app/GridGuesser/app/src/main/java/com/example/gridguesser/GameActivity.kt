@@ -9,13 +9,14 @@ import android.widget.Button
 import android.widget.GridView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.example.gridguesser.MainActivity.Companion.newIntent
 import com.example.gridguesser.database.GameRepository
+import com.example.gridguesser.deviceID.DeviceID
+import com.example.gridguesser.http.ServerInteractions
 
 
-private const val TAG = "GameActivity"
+private const val TAG = "GridGuesser"
+private const val GAMEID = "game_id"
 
 class GameActivity : AppCompatActivity() {
     private lateinit var gridView: GridView
@@ -28,34 +29,38 @@ class GameActivity : AppCompatActivity() {
     private lateinit var home: Button
 
     private var initialShips = 5
+    private var gameID: Int = -1
+    private val gameRepo = GameRepository.get()
+    private val serverInteractions = ServerInteractions.get()
+    private lateinit var deviceID: String
 
-    private var playerOneBoard = arrayOf(
+    private var playerOneBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
-        "1", "", "", "3", "", "", "", "", "", "", "",
-        "2", "", "", "3", "", "", "", "", "", "", "",
-        "3", "", "", "3", "", "", "", "", "", "", "",
-        "4", "", "", "3", "", "", "", "", "", "", "",
-        "5", "", "", "3", "", "", "", "", "", "", "",
-        "6", "", "", "3", "", "", "", "", "", "", "",
-        "7", "", "", "3", "", "", "", "", "", "", "",
-        "8", "", "", "3", "", "", "", "", "", "", "",
-        "9", "", "", "3", "", "", "", "", "", "", "",
-        "10", "", "", "3", "", "", "", "", "", "", ""
+        "1", "", "", "", "", "", "", "", "", "", "",
+        "2", "", "", "", "", "", "", "", "", "", "",
+        "3", "", "", "", "", "", "", "", "", "", "",
+        "4", "", "", "", "", "", "", "", "", "", "",
+        "5", "", "", "", "", "", "", "", "", "", "",
+        "6", "", "", "", "", "", "", "", "", "", "",
+        "7", "", "", "", "", "", "", "", "", "", "",
+        "8", "", "", "", "", "", "", "", "", "", "",
+        "9", "", "", "", "", "", "", "", "", "", "",
+        "10", "", "", "", "", "", "", "", "", "", ""
 
     )
 
-    private var playerTwoBoard = arrayOf(
+    private var playerTwoBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
-        "1", "", "", "2", "", "", "", "", "", "", "",
-        "2", "", "", "2", "", "", "", "", "", "", "",
-        "3", "", "", "3", "", "", "", "", "", "", "",
-        "4", "", "", "3", "", "", "", "", "", "", "",
-        "5", "", "", "3", "", "", "", "", "", "", "",
-        "6", "", "", "2", "", "", "", "", "", "", "",
+        "1", "", "", "", "", "", "", "", "", "", "",
+        "2", "", "", "", "", "", "", "", "", "", "",
+        "3", "", "", "", "", "", "", "", "", "", "",
+        "4", "", "", "", "", "", "", "", "", "", "",
+        "5", "", "", "", "", "", "", "1", "", "", "",
+        "6", "", "", "", "", "", "", "", "", "", "",
         "7", "", "", "", "", "", "", "", "", "", "",
-        "8", "", "", "2", "", "", "", "", "", "", "",
-        "9", "", "", "3", "", "", "", "", "", "", "",
-        "10", "", "", "3", "", "", "", "", "", "", ""
+        "8", "", "", "", "", "", "", "", "", "", "",
+        "9", "", "", "", "", "", "", "", "", "", "",
+        "10", "", "", "", "", "", "", "", "", "", ""
 
     )
     //fun getState(): LiveData<Int> = 0
@@ -64,8 +69,23 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        deviceID = DeviceID.getDeviceID(contentResolver)
 
-        var GameRepoo = GameRepository.get()
+        val intent = intent
+        gameID = intent.getIntExtra(GAMEID, -1)
+        if(gameID == -1){
+            gameID = gameRepo.id
+        } else {
+            gameRepo.id = gameID
+        }
+
+        //loadBoards()
+
+        //using gameID, ask server for all game info
+        //convert game boards to array of states
+            //don't show opponents ships (1's -> 0's)
+            //determine number of ships remaining for each player
+        //Handle different game states
 
 
         opp_Btn = findViewById(R.id.goToOpponent)
@@ -75,19 +95,20 @@ class GameActivity : AppCompatActivity() {
         help = findViewById(R.id.help)
         home = findViewById(R.id.home)
 
-        updateGameView(GameRepoo.state, GameRepoo.ships.value!!)
+        updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
 
-            GameRepoo.ships.observe(
+            gameRepo.remainingShips.observe(
             this,
             Observer { ships ->
                 ships?.let {
-                    Log.d("GameActivity","ships was changed")
+                    Log.d(TAG,"ships was changed")
                     //userTurn.text = "Place Ships:"+ (initialShips.minus(GameRepoo.ships.value!!)).toString()
-                    if(initialShips == GameRepoo.ships.value){
-                        GameRepoo.state = 1
-                        //send game board to server
+                    if(initialShips == gameRepo.remainingShips.value){
+                        gameRepo.state = 1
+                        gameRepo.remainingShips.value = -1
+                        placeShips()
                     }
-                    updateGameView(GameRepoo.state, GameRepoo.ships.value!!)
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
 
                 }
             })
@@ -98,7 +119,7 @@ class GameActivity : AppCompatActivity() {
             setupBoard((playerTwoBoard))
             my_Btn.visibility= View.VISIBLE
             opp_Btn.visibility= View.INVISIBLE
-            boardTitle.text = resources.getString(R.string.opp_ships)
+            boardTitle.text = resources.getString(R.string.opponents_ships)
         }
 
         my_Btn.setOnClickListener {
@@ -117,19 +138,98 @@ class GameActivity : AppCompatActivity() {
         home.setOnClickListener {
             //TODO save game state
             //TODO go to home
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = MainActivity.newIntent(this)
             startActivity(intent)
         }
     }
 
-    fun setupBoard (playerBoard: Array<String>) {
-        gridView = findViewById(R.id.gridview) as GridView
+    private fun placeShips(){
+        var board = "["
+        for(i in 1..10){
+            board += "["
+            for(j in 1..10){
+                board +=  "{\"x\":${i-1}, \"y\":${j-1}, \"state\":"
+                board += if(playerOneBoard[11 * i + j].isNotEmpty()){
+                    playerOneBoard[11*i + j]
+                } else {
+                    "0"
+                }
+                board += if(j==10){
+                    "}"
+                } else {
+                    "},"
+                }
+            }
+
+            board += if(i == 10){
+                "]"
+            } else {
+                "],"
+            }
+        }
+        board += "]"
+        Log.d(TAG, board)
+        serverInteractions.makeBoard(gameID, deviceID, board).observe(
+            this,
+            Observer { response ->
+                response?.let {
+                    Log.d(TAG,"Updated board: $response")
+                }
+            })
+    }
+
+    private fun loadBoards(){
+        serverInteractions.getBoards(gameID).observe(
+            this,
+            Observer {response ->
+                response?.let {
+                    if(response.get("player1").toString() == deviceID){
+                        playerOneBoard = parseBoard(response.get("player1_board").toString())
+                        playerTwoBoard = parseBoard(response.get("player2_board").toString())
+                    } else {
+                        playerOneBoard = parseBoard(response.get("player1_board").toString())
+                        playerTwoBoard = parseBoard(response.get("player2_board").toString())
+                    }
+                    setupBoard(playerOneBoard)
+                    var toPrint = ""
+                    for(i in 0 until playerOneBoard.size){
+                        toPrint += playerOneBoard[i] + ""
+                        if(i%11 == 0){
+                            toPrint += "\n"
+                        }
+                    }
+                    Log.d(TAG, "TO PRINT: $toPrint")
+                }
+            }
+        )
+    }
+
+    private fun parseBoard(board: String): MutableList<String>{
+        var toReturn: MutableList<String> = mutableListOf(" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "1")
+        val splitBoard = board.split(":")
+        var row = 2
+        for(i in 1 until splitBoard.size){
+            if(i % 3 == 0){
+                toReturn.add(splitBoard[i][0].toString())
+            }
+
+            if(i % 30 == 0 && row < 11){
+                toReturn.add(row.toString())
+                row++
+            }
+        }
+        Log.d(TAG, "TO RETURN: $toReturn")
+        return toReturn
+    }
+
+    private fun setupBoard (playerBoard: MutableList<String>) {
+        gridView = findViewById(R.id.gridview)
         val adapter = SpaceAdapter(this, playerBoard)
         gridView.adapter = adapter
     }
 
     //updates the view based on the state
-    fun updateGameView (state: Int, numShips: Int) {
+    private fun updateGameView (state: Int, numShips: Int) {
         when(state){
             0 -> { //placing ships
                 userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
@@ -148,6 +248,14 @@ class GameActivity : AppCompatActivity() {
             }
             else -> {
                 Log.d( TAG, "something is wrong")
+            }
+        }
+    }
+
+    companion object{
+        fun newIntent(packageContext: Context, id: Int): Intent {
+            return Intent(packageContext, GameActivity::class.java).apply {
+                putExtra(GAMEID, id)
             }
         }
     }
