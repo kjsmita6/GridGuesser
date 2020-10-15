@@ -17,7 +17,8 @@ private const val TAG = "GridGuesser"
 class SpaceAdapter (
     private val context: Context?,
     private val squares: MutableList<String>,
-    private val player: Int
+    private val player: Int,
+    private val whichBoard: Int
 ) : BaseAdapter() {
 
     interface Callbacks {

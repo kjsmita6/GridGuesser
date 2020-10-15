@@ -108,12 +108,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
         )
 
-        //using gameID, ask server for all game info
-        //convert game boards to array of states
-            //don't show opponents ships (1's -> 0's)
-            //determine number of ships remaining for each player
-        //Handle different game states
-
         opp_Btn = findViewById(R.id.goToOpponent)
         my_Btn = findViewById(R.id.goToPlayer)
         userTurn = findViewById(R.id.userTurn)
@@ -138,8 +132,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 }
             })
 
-        if (gameRepo.state == 0)
-            setupBoard(playerOneBoard)
+//        if (gameRepo.state == 0)
+//            setupBoard(playerOneBoard)
 
         opp_Btn.setOnClickListener {
             setupBoard(playerTwoBoard)
@@ -174,6 +168,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             Observer {
                 if(gameRepo.eventID == gameID && gameRepo.event == "turn"){ //if the other player took their turn
                     gameRepo.state = player
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                     loadBoards()
                 } else if(gameRepo.eventID == gameID && gameRepo.event == "board"){ //if the other player finished placing their ships
                     gameRepo.state += 1
@@ -265,7 +260,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
         )
     }
-
+    //change server board style to be the gridview style
     private fun parseBoard(board: String, isThisPlayer: Boolean): MutableList<String>{
         var toReturn: MutableList<String> = mutableListOf(" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "1")
         val splitBoard = board.split(":")
@@ -273,7 +268,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         for(i in 1 until splitBoard.size){
             if(i % 3 == 0){
                 var value = splitBoard[i][0].toString()
-                if(!isThisPlayer && (value=="1")){
+                if(!isThisPlayer && (value=="1")){ //don't show opponents ships
                     value = "0"
                 }
                 toReturn.add(value)
@@ -289,7 +284,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     private fun setupBoard (playerBoard: MutableList<String>) {
         gridView = findViewById(R.id.gridview)
-        val adapter = SpaceAdapter(this, playerBoard, player)
+        val adapter = SpaceAdapter(this, playerBoard, player, 1)
         gridView.adapter = adapter
     }
 
@@ -300,11 +295,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         when(state){
             (-1) -> {
                 userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
+                boardTitle.text = resources.getString(R.string.your_ships)
                 opp_Btn.visibility= View.INVISIBLE
                 my_Btn.visibility= View.INVISIBLE
             }
             0 -> { //placing ships
                 userTurn.text = "Waiting for other player to place ships".toString()
+                boardTitle.text = resources.getString(R.string.your_ships)
                 opp_Btn.visibility= View.INVISIBLE
                 my_Btn.visibility= View.INVISIBLE
             }
