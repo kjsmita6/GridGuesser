@@ -165,7 +165,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         gameRepo.changeFlag.observe(
             this,
             Observer {
-                if(gameRepo.event == "turn"){
+                if(gameRepo.id == gameID && gameRepo.event == "turn"){
                     gameRepo.state = player
                     updateGameView(gameRepo.state, 0)
                 }
@@ -240,13 +240,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     }
                     updateGameView(gameRepo.state, 0)
                     setupBoard(playerOneBoard)
-                    /*var toPrint = ""
-                    for(i in 0 until playerOneBoard.size){
-                        toPrint += playerOneBoard[i] + ""
-                        if(i%11 == 0){
-                            toPrint += "\n"
-                        }
-                    }*/
                 }
             }
         )

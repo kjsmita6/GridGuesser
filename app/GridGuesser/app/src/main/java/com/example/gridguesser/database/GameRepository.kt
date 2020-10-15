@@ -50,8 +50,9 @@ class GameRepository private constructor(var context: Context) {
         }
     }
 
-    fun updateEvent(e: String){
+    fun updateEvent(e: String, gameID: String){
         event = e
+        id = gameID.toInt()
         changeFlag.postValue(true)
     }
 

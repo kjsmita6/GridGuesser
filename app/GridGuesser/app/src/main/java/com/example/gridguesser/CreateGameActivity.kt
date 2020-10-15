@@ -57,6 +57,14 @@ class CreateGameActivity : AppCompatActivity() {
         createGame.setOnClickListener {
             submitGame()
         }
+        gameRepo.changeFlag.observe(
+            this,
+            Observer {
+                if(gameRepo.id == gameID && gameRepo.event == "turn"){
+                    userJoined()
+                }
+            }
+        )
     }
 
     private fun submitGame(){
@@ -88,7 +96,7 @@ class CreateGameActivity : AppCompatActivity() {
     }
 
     //to be called by firebase after a user joins
-    fun userJoined(){
+    private fun userJoined(){
         val intent = GameActivity.newIntent(this@CreateGameActivity, gameID)
         startActivity(intent)
     }
