@@ -72,7 +72,7 @@ class SpaceAdapter (
                 }
 
             spaceView.spaceBtn.setOnClickListener {
-                Log.d("SpaceAdapter", "button pressed")
+                Log.d(TAG, "button pressed")
                 if (gameRepo.state == 0 || gameRepo.state == -1) {
                     Log.d(TAG, "state 0")
                     squares[position] = "1"
@@ -80,9 +80,8 @@ class SpaceAdapter (
                     notifyDataSetChanged()
                 }
                 else if (gameRepo.state == player){
-                    Log.d(TAG, "state not 0")
-                    val i = squares[position]
-                    when (i) {
+                    Log.d(TAG, "GAME STATE $player")
+                    when (squares[position]) {
                         "0" -> {
                             callbacks?.onSquareSelected(position)
                         }
@@ -98,9 +97,6 @@ class SpaceAdapter (
                         else -> {
                         }
                     }
-
-                    //TODO: check if there is a ship on player two's board
-                    //TODO: send player one's move to server
                 }
             }
         }
