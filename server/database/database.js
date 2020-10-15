@@ -2,13 +2,14 @@ const log = require('../utils').logger;
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const Board = require('../board');
+const { logger } = require('../utils');
 
 const CREATE_TABLE_GAMES = 'create table if not exists games (id int(32) not null primary key, state int(1) not null, title varchar2(32) not null, code varchar2(4) not null, turn int(1) not null, player1 varchar2(32) not null, player2 varchar2(32) null, player1_board varchar(2048) not null, player2_board varchar(2048) not null, foreign key(player1) references users(id), foreign key(player2) references users(id))';
 const CREATE_TABLE_USERS = 'create table if not exists users (id varchar(32) not null primary key, username varchar(32) not null, token varchar(256) not null)';
 
 class Database {
     constructor(db) {
-        let p = path.resolve(__dirname, `../db/${db}.db`);
+        let p = path.resolve(__dirname, `../database/${db}.db`);
         this.db = new sqlite3.Database(p, err => {
             if (err) {
                 log.error(`Error opening database ${p} -- ${err.message}: ${err.stack}`);
@@ -33,27 +34,39 @@ class Database {
     }
 
     runEachQuery(query, args, callback) {
-        this.db.serialize(() => {
-            this.db.each(query, args, (err, row) => {
-                callback(err, row);
+        try {
+            this.db.serialize(() => {
+                this.db.each(query, args, (err, row) => {
+                    callback(err, row);
+                });
             });
-        });
+        } catch (e) {
+            logger.error(`${e.message}: ${e.stack}`);
+        }
     }
 
     runFirstQuery(query, args, callback) {
-        this.db.serialize(() => {
-            this.db.get(query, args, (err, row) => {
-                callback(err, row);
+        try {
+            this.db.serialize(() => {
+                this.db.get(query, args, (err, row) => {
+                    callback(err, row);
+                });
             });
-        });
+        } catch (e) {
+            logger.error(`${e.message}: ${e.stack}`);
+        }
     }
 
     runAllQuery(query, args, callback) {
-        this.db.serialize(() => {
-            this.db.all(query, args, (err, rows) => {
-                callback(err, rows);
+        try {
+            this.db.serialize(() => {
+                this.db.all(query, args, (err, rows) => {
+                    callback(err, rows);
+                });
             });
-        });
+        } catch (e) {
+            logger.error(`${e.message}: ${e.stack}`);
+        }
     }
 
     getGameID(callback) {

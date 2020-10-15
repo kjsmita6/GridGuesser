@@ -4,9 +4,8 @@ const util = require('./utils');
 const logger = util.logger
 const Firebase = require('./firebase');
 
-const DatabaseRouter = require('./database/dbrouter');
-DatabaseRouter.initialize();
-const database = DatabaseRouter.getInstance().db;
+const Database = require('./database/database');
+const database = new Database('gg');
 
 function logPost(req) {
     logger.silly(util.parseReq('POST', req));
@@ -82,6 +81,7 @@ router.post('/joingame', (req, res) => {
             return;
         } else {
             if (rows.length != 1) {
+                logger.warn(`No matching games`);
                 res.status(500).json({ error: 'ERR_NO_MATCHING_GAMES' });
                 return;
             } else {
@@ -89,12 +89,14 @@ router.post('/joingame', (req, res) => {
                 logger.verbose('Rows: ' + JSON.stringify(rows[0], null, 4));
                 database.getPlayerUsername(rows[0].player1, (err1, rows1) => {
                     if (err1 || !rows1) {
+                        logger.warn(err1 ? `Error getting player username -- ${err1.message}: ${err1.stack}` : 'no rows returned');
                         res.status(500).json({ error: err1 ? err1.message : 'no rows returned' });
                         return;
                     } else {
                         logger.verbose('Rows1: ' + JSON.stringify(rows1, null, 4));
                         database.joinGame(id, player2, (err2, rows2) => {
                             if (err2) { 
+                                logger.warn(`Error joining game -- ${err2.message}: ${err2.stack}`);
                                 res.status(500).json({ error: err2.message });
                             } else {
                                 logger.verbose('Rows2: ' + rows2);
@@ -134,6 +136,7 @@ router.post('/finishgame', (req, res) => {
     let player = req.body.player;
     database.finishGame(id, (err, rows) => {
         if (err) {
+            logger.warn(`Error finishing game -- ${err.message}: ${err.stack}`);
             res.status(500).json({ error: err.message });
             return;
         } else {
@@ -181,38 +184,52 @@ router.post('/finishgame', (req, res) => {
 router.post('/move', (req, res) =>{ 
     logPost(req);
     let id = req.body.id;
-    logger.verbose(id);
+    logger.verbose('id: ' + id);
     let coords = req.body.coords;
+    let player = req.body.player;
     let x = coords.x;
     let y = coords.y;
     database.getBoards(id, (err, rows) => {
         if (err || !rows) {
+            logger.warn(err ? `Error getting boards -- ${err.message}: ${err.stack}` : 'no rows returned');
             res.status(500).json({ error: err ? err.message : 'no rows returned' });
             return;
         } else {
+            let player1 = rows.player1;
+            let player2 = rows.player2;
             let player1_board = JSON.parse(rows.player1_board);
             let player2_board = JSON.parse(rows.player2_board);
             let turn = ~rows.turn && 0x3;
-            player1_board[x][y].state += 2;
-            player2_board[x][y].state += 2;
+            if (rows.turn === 1) {
+                turn = 2;
+            } else if (rows.turn === 2) {
+                turn = 1;
+            }
+            if (player === player1) {
+                player2_board[x][y].state += 2;
+            } else if (player === player2) {
+                player1_board[x][y].state += 2;
+            }
             database.updateBoards(id, [JSON.stringify(player1_board), JSON.stringify(player2_board)], turn, (err1, rows1) => {
                 if (err1) {
+                    logger.warn(`Error getting boards -- ${err1.message}: ${err1.stack}`);
                     res.status(500).json({ error: err1.message });
                 } else {
-                    res.status(200).json({ error: null, x: x, y: y, state: player1_board[x][y].state, turn: turn });
+                    res.status(200).json({ error: null, x: x, y: y, state: player === player1 ? player2_board[x][y].state : player1_board[x][y].state, turn: turn });
                     database.getPlayersInGame(id, (err2, rows2) => {
                         if (err2 || !rows2) {
                             logger.warn(err2 ? `Error getting players -- ${err2.message}: ${err2.stack}` : 'no rows returned');
                         } else {
+                            logger.verbose('rows2: ' + JSON.stringify(rows2, null, 4));
                             database.getUserToken(turn === 2 ? rows2.player2 : rows2.player1, (err3, rows3) => {
                                 if (err3 || !rows3) {
-                                    logger.warn(err2 ? `Error getting player token -- ${err3.message}: ${err3.stack}` : 'no rows returned');    
+                                    logger.warn(err3 ? `Error getting player token -- ${err3.message}: ${err3.stack}` : 'no rows returned');    
                                 } else {
                                     Firebase.sendMessage(rows3.token, {
                                         data: {
                                             event: 'turn',
                                             id: id.toString(),
-                                            state: player1_board[x][y].state == 2 ? '2' : '3'
+                                            state: player === player1 ? player2_board[x][y].state.toString() : player1_board[x][y].state.toString()
                                         }
                                     });
                                 }
@@ -233,6 +250,7 @@ router.post('/updateuser', (req, res) => {
     //database.updateUser(id, username, token, (err, rows) => {
     database.insertOrUpdateUser(id, username, token, (err, rows) => { 
         if (err) {
+            logger.warn(`Error updating/creating user -- ${err.message}: ${err.stack}`);
             res.status(500).json({ error: err.message });
         } else {
             res.status(200).json({ error: null });
@@ -258,6 +276,7 @@ router.post('/whichplayer', (req, res) => {
     let player = req.body.player;
     database.getPlayersInGame(game, (err, rows) => {
         if (err || !rows) {
+            logger.warn(err ? `Error getting which player -- ${err.message}: ${err.stack}` : 'no rows returned');
             res.status(500).json({ error: err ? err.message : 'no rows returned' });
         } else {
             if (player === rows.player1) {
@@ -279,6 +298,7 @@ router.post('/makeboard', (req, res) => {
     let board = req.body.board;
     database.getPlayersInGame(game, (err, rows) => {
         if (err || !rows) {
+            logger.warn(err ? `Error getting players in game -- ${err.message}: ${err.stack}` : 'no rows returned');
             res.status(500).json({ error: err ? err.message : 'no rows returned' });
         } else {
             database.updateBoard(game, player === rows.player1 ? 1 : 2, board, (err1, rows1) => {

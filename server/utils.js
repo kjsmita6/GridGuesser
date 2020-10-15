@@ -22,13 +22,6 @@ class Util {
                 format: winston.format.combine(winston.format.timestamp(),
                                                 winston.format.colorize(),
                                                 winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`))
-            }),
-            new winston.transports.File({
-                colorize: false,
-                timestamp: true,
-                level: 'debug',
-                json: false,
-                filename: './logs/system.log'
             })
         ]
     });
