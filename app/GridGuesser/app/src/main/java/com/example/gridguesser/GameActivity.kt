@@ -44,7 +44,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private val gameRepo = GameRepository.get()
     private val serverInteractions = ServerInteractions.get()
     private lateinit var deviceID: String
-    private var isPlayerOne = true
+    //private var isPlayerOne = true
 
     private var playerOneBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
@@ -93,11 +93,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             gameRepo.id = gameID
         }
 
-<<<<<<< HEAD
-=======
+
         getWhichPlayer()
-        Log.d(TAG, "plauyer is " + player)
->>>>>>> b9a0c38df556d3d59207045b05e98f38455aa5d5
+        Log.d(TAG, "player is " + player)
         loadBoards()
 
         //using gameID, ask server for all game info
@@ -280,7 +278,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
             }
             1 -> {
                 //if this player is player one
-                if(isPlayerOne){
+                if(player == 1){
                     userTurn.text = "Your Turn"
                 }
                 else{
@@ -290,7 +288,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
                 my_Btn.visibility = View.INVISIBLE
             }
             2-> {
-                if(isPlayerOne){
+                if(player == 2){
                     userTurn.text = "Player Two's Turn"
                 }
                 else{
