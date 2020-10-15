@@ -20,4 +20,16 @@ interface ServerAPI {
 
     @POST("updateuser")
     fun updateUser(@Body user: JsonObject): Call<JsonObject>
+
+    @POST("makeboard")
+    fun makeBoard(@Body info: JsonObject): Call<JsonObject>
+
+    @POST("getboards")
+    fun getBoards(@Body game: JsonObject): Call<JsonObject>
+
+    @POST("whichplayer")
+    fun getPlayer(@Body user: JsonObject): Call<JsonObject>
+
+    @POST("move")
+    fun move(@Body info: JsonObject): Call<JsonObject>
 }

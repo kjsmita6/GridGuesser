@@ -18,8 +18,8 @@ private const val TAG = "GridGuesser"
 class ServerInteractions {
 
     private val serverAPI: ServerAPI
-    //private val url: String = "https://68.186.247.90:8080/"
-    private val url: String = "http://192.168.1.130:8080/"
+    private val url: String = "http://68.186.247.90:8080/"
+    //private val url: String = "http://192.168.1.192:8080/"
     var serverStatus: LiveData<Boolean>
 
     init {
@@ -162,6 +162,112 @@ class ServerInteractions {
 
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                 Log.e(TAG, "Failed to update user", t)
+                responseLiveData.value = null
+            }
+
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+                Log.d(TAG, response.toString())
+                responseLiveData.value = response.body()
+            }
+        })
+
+        return responseLiveData
+    }
+
+    fun whichPlayer(deviceID: String, gameID: Int): LiveData<JsonObject> {
+        val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
+        val userBody = JsonObject()
+        userBody.addProperty("player", deviceID)
+        userBody.addProperty("game", gameID)
+        val whichPlayerRequest: Call<JsonObject> = serverAPI.getPlayer(userBody)
+        whichPlayerRequest.enqueue(object : Callback<JsonObject> {
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e(TAG, "Failed to fetch player", t)
+                responseLiveData.value = null
+            }
+
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+                Log.d(TAG, response.toString())
+                responseLiveData.value = response.body()
+            }
+        })
+
+        return responseLiveData
+    }
+
+    fun getBoards(gameID: Int): LiveData<JsonObject> {
+        val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
+        val userBody = JsonObject()
+        userBody.addProperty("game", gameID)
+        val boardRequest: Call<JsonObject> = serverAPI.getBoards(userBody)
+        boardRequest.enqueue(object : Callback<JsonObject> {
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e(TAG, "Failed to fetch boards", t)
+                responseLiveData.value = null
+            }
+
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+                Log.d(TAG, response.toString())
+                responseLiveData.value = response.body()
+            }
+        })
+
+        return responseLiveData
+    }
+
+    fun makeBoard(gameID: Int, deviceID: String, board: String): LiveData<JsonObject> {
+        val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
+        val userBody = JsonObject()
+        userBody.addProperty("game", gameID)
+        userBody.addProperty("player", deviceID)
+        userBody.addProperty("board", board)
+        val makeBoardRequest: Call<JsonObject> = serverAPI.makeBoard(userBody)
+        makeBoardRequest.enqueue(object : Callback<JsonObject> {
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e(TAG, "Failed to make board", t)
+                responseLiveData.value = null
+            }
+
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+                Log.d(TAG, response.toString())
+                responseLiveData.value = response.body()
+            }
+        })
+
+        return responseLiveData
+    }
+
+    fun move(gameID: Int, deviceID: String, x: Int, y: Int): LiveData<JsonObject> {
+        val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
+        val userBody = JsonObject()
+        userBody.addProperty("game", gameID)
+        userBody.addProperty("player", deviceID)
+
+        val coords = JsonObject()
+        coords.addProperty("x", x)
+        coords.addProperty("y", y)
+        userBody.add("coords", coords)
+
+        val moveRequest: Call<JsonObject> = serverAPI.move(userBody)
+        moveRequest.enqueue(object : Callback<JsonObject> {
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e(TAG, "Failed to make move", t)
                 responseLiveData.value = null
             }
 
