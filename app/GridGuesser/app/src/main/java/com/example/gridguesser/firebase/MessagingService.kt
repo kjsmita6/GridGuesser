@@ -16,11 +16,9 @@ import com.example.gridguesser.deviceID.DeviceID
 import com.example.gridguesser.http.ServerInteractions
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import java.util.*
 
 const val TAG = "GridGuesser"
 const val NOTIFICATION_CHANNEL_ID = "10101"
-const val DEFAULT_ID = "default"
 class MessagingService: FirebaseMessagingService() {
     private var gameRepo: GameRepository = GameRepository.get()
 
@@ -98,8 +96,7 @@ class MessagingService: FirebaseMessagingService() {
 
     private fun sendNotification(messageBody: String, title: String) {
         Log.d(TAG, "$title: $messageBody")
-        val random = Random()
-        val intent = MainActivity.newIntent(this, random.nextInt().toString())
+        val intent = MainActivity.newIntent(this)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
