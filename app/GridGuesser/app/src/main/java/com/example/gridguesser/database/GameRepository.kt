@@ -67,10 +67,12 @@ class GameRepository private constructor(var context: Context) {
     }
 
     fun updateScore(id: String, player1: Boolean) {
-        if(player1) {
-            gameDao.updateScore(id)
-        } else {
-            gameDao.updateScore2(id)
+        executor.execute {
+            if(player1) {
+                gameDao.updateScore(id)
+            } else {
+                gameDao.updateScore2(id)
+            }
         }
     }
 
