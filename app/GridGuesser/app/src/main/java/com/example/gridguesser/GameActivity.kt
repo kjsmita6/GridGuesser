@@ -151,16 +151,16 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
         opp_Btn.setOnClickListener {
             setupBoard(playerTwoBoard, 2)
-            my_Btn.visibility= View.VISIBLE
-            opp_Btn.visibility= View.INVISIBLE
-            boardTitle.text = resources.getString(R.string.opponents_ships)
+//            my_Btn.visibility= View.VISIBLE
+//            opp_Btn.visibility= View.INVISIBLE
+            //boardTitle.text = resources.getString(R.string.opponents_ships)
         }
 
         my_Btn.setOnClickListener {
             setupBoard(playerOneBoard, 1)
-            opp_Btn.visibility = View.VISIBLE
-            my_Btn.visibility = View.INVISIBLE
-            boardTitle.text = resources.getString(R.string.your_ships)
+//            opp_Btn.visibility = View.VISIBLE
+//            my_Btn.visibility = View.INVISIBLE
+            //boardTitle.text = resources.getString(R.string.your_ships)
         }
 
         bg = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.gameBackground)
@@ -187,13 +187,18 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     if(displayedBoard == 1){
                         setupBoard(playerOneBoard, 1)
                     }
+
                     gameRepo.notifyChange(gameID.toString(), false)
                 } else if(gameRepo.eventID == gameID && gameRepo.event == "board"){ //if the other player finished placing their ships
                     gameRepo.state += 1
-                    if(gameRepo.state != 0){
+                    if(gameRepo.state == 1){
                         updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                     }
                     gameRepo.notifyChange(gameID.toString(), false)
+                }
+                else if(gameRepo.eventID == gameID && gameRepo.event == "finished"){
+                    gameRepo.notifyChange(gameID.toString(), false)
+                    gameEnded(false)
                 }
             }
         )
@@ -311,6 +316,22 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     }
 
     private fun setupBoard (playerBoard: MutableList<String>, whichBoard: Int) {
+        var state = GameRepository.get().state
+        if(whichBoard == 1){
+            boardTitle.text = resources.getString(R.string.your_ships)
+            if(state != 0 || state != 1) {
+                my_Btn.visibility = View.INVISIBLE
+                opp_Btn.visibility = View.VISIBLE
+            }
+        }
+        else{
+            boardTitle.text = resources.getString(R.string.opponents_ships)
+            if(state != 0 || state != 1) {
+                my_Btn.visibility = View.VISIBLE
+                opp_Btn.visibility = View.INVISIBLE
+            }
+        }
+
         displayedBoard = whichBoard
         gridView = findViewById(R.id.gridview)
         val adapter = SpaceAdapter(this, playerBoard, player, whichBoard)
@@ -330,6 +351,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
             0 -> { //placing ships
                 userTurn.text = "Waiting for other player to place ships".toString()
+                if (initialShips != gameRepo.remainingShips.value){
+                    userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
+                }
                 boardTitle.text = resources.getString(R.string.your_ships)
                 opp_Btn.visibility= View.INVISIBLE
                 my_Btn.visibility= View.INVISIBLE
@@ -342,8 +366,19 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 else{
                     userTurn.text = "Player One's Turn"
                 }
-                opp_Btn.visibility = View.VISIBLE
-                my_Btn.visibility = View.INVISIBLE
+
+//                if(displayedBoard == 1){
+//                    boardTitle.text = resources.getString(R.string.your_ships)
+//                    my_Btn.visibility= View.INVISIBLE
+//                    opp_Btn.visibility= View.VISIBLE
+//                }
+//                else{
+//                    boardTitle.text = resources.getString(R.string.opponents_ships)
+//                    my_Btn.visibility= View.VISIBLE
+//                    opp_Btn.visibility= View.INVISIBLE
+//                }
+//                opp_Btn.visibility = View.VISIBLE
+//                my_Btn.visibility = View.INVISIBLE
             }
             2-> {
                 if(player == 2){
@@ -352,8 +387,19 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 else{
                     userTurn.text = "Player Two's Turn"
                 }
-                my_Btn.visibility = View.VISIBLE
-                opp_Btn.visibility = View.INVISIBLE
+
+//                if(displayedBoard == 1){
+//                    boardTitle.text = resources.getString(R.string.your_ships)
+//                    my_Btn.visibility= View.INVISIBLE
+//                    opp_Btn.visibility= View.VISIBLE
+//                }
+//                else{
+//                    boardTitle.text = resources.getString(R.string.opponents_ships)
+//                    my_Btn.visibility= View.VISIBLE
+//                    opp_Btn.visibility= View.INVISIBLE
+//                }
+//                my_Btn.visibility = View.VISIBLE
+//                opp_Btn.visibility = View.INVISIBLE
             }
             else -> {
                 userTurn.text = "Turn State is Wrong"
@@ -375,10 +421,22 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         Log.d(TAG, "MOVE RESPONSE: $response")
                         gameRepo.state = response.get("turn").toString().toInt()
                         playerTwoBoard[position] = response.get("state").toString()
-                        if(response.get("state").toString() == "3"){
-                            gameRepo.updateScore(gameID.toString(), true)
-                        }
                         gameRepo.alternateTurn(gameID.toString())
+
+                        if(response.get("state").toString() == "3"){
+                            var observeScore = true
+                            gameRepo.updateScore(gameID.toString(), true)
+                            gameRepo.getGame(gameID.toString()).observe(this, Observer{ response ->
+                                if(observeScore){
+                                    observeScore = false
+                                    if(response.red_hits == 5){
+                                        gameRepo.finishGame(gameID.toString())
+                                        serverInteractions.finishGame(gameID.toString(), deviceID)
+                                        gameEnded(true)
+                                    }
+                                }
+                            })
+                        }
                         updateGameView(gameRepo.state, 0)
                         if(displayedBoard == 2){
                             setupBoard(playerTwoBoard, 2)
@@ -387,6 +445,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 }
             }
         )
+    }
+
+    private fun gameEnded(youWon: Boolean){
+        val Intent = ResultsActivity.newIntent(this, youWon)
+        startActivity(Intent)
     }
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
