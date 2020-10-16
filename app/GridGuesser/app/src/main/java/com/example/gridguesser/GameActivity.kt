@@ -83,6 +83,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     override fun assignShip(position: Int) {
         playerOneBoard[position] = "1"
+        Log.d(TAG, "PLAYER ONE SET $position")
     }
 
 
@@ -362,7 +363,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     private fun move(position: Int){
         var observeMove = true
-        serverInteractions.move(gameID, deviceID, (position % 11)-1, (position / 11)-1).observe(
+        serverInteractions.move(gameID, deviceID, (position / 11)-1, (position % 11)-1).observe(
             this,
             Observer { response ->
                 if(observeMove){
