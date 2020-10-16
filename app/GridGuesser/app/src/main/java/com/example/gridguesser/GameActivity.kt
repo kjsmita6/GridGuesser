@@ -84,14 +84,12 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     override fun assignShip(position: Int) {
         playerOneBoard[position] = "1"
-        Log.d(TAG, "PLAYER ONE SET $position")
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-        Log.d(TAG, "CREATING GAME ACTIVITY")
 
         settings = gameRepo.currentSettings
         deviceID = DeviceID.getDeviceID(contentResolver)
@@ -117,7 +115,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     observeState = false;
                     gameRepo.currentGame = thisGame
                     gameRepo.state = thisGame.status
-                    Log.d(TAG, "INITIAL STATUS: ${gameRepo.state}")
                     updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                     setupBoard(playerOneBoard, 1)
                 }
@@ -139,7 +136,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         Observer { ships ->
             ships?.let {
                 if (observeShips){
-                    Log.d(TAG,"#SHIPS WAS CHANGED")
                     if(initialShips == gameRepo.remainingShips.value){ //if this player has finished placing their ships
                         gameRepo.state += 1 //increment state (goes to 0 if other player hasn't finished with their ships, 1 otherwise)
                         gameRepo.remainingShips.value = 0
@@ -215,7 +211,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                             player = 1
                         else if(response.get("player").toString() == "2")
                             player = 2
-                        Log.d(TAG, "player is $player")
                     }
                     loadBoards()
                 }
@@ -239,7 +234,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 } else {
                     "},"
                 }
-                Log.d(TAG, "AT $i, $j: ${playerOneBoard[11*i+j]}")
             }
 
             board += if(i == 10){
@@ -276,7 +270,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         Log.d(TAG, "LOADING: $response")
                         gameRepo.state = response.get("turn").toString().toInt()
 
-                        Log.d(TAG, "${response.get("player1")} AND D-ID $deviceID")
                         if(response.get("player1").toString().replace("\"", "") == deviceID){
                             playerOneBoard = parseBoard(response.get("player1_board").toString(), true)
                             playerTwoBoard = parseBoard(response.get("player2_board").toString(), false)
@@ -303,7 +296,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             if(i % 3 == 0){
                 var value = splitBoard[i][0].toString()
                 if(!isThisPlayer && value=="1"){ //don't show opponents ships
-                    Log.d(TAG, "FOUND OPPONENT SHIP AT ${toReturn.size-1}")
                     value = "0"
                 }
                 toReturn.add(value)
@@ -344,8 +336,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     //updates the view based on the state
     private fun updateGameView (state: Int, numShips: Int) {
-        Log.d(TAG, "STATE IS: $state")
-
         when(state){
             (-1) -> {
                 userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
@@ -356,7 +346,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             0 -> { //placing ships
 
                 userTurn.text = "Waiting for other player to place ships"
-                Log.d(TAG, "$initialShips AND NUM $numShips")
                 if (initialShips != numShips){
                     userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
                 }
@@ -372,19 +361,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 else{
                     userTurn.text = "Player One's Turn"
                 }
-
-//                if(displayedBoard == 1){
-//                    boardTitle.text = resources.getString(R.string.your_ships)
-//                    my_Btn.visibility= View.INVISIBLE
-//                    opp_Btn.visibility= View.VISIBLE
-//                }
-//                else{
-//                    boardTitle.text = resources.getString(R.string.opponents_ships)
-//                    my_Btn.visibility= View.VISIBLE
-//                    opp_Btn.visibility= View.INVISIBLE
-//                }
-//                opp_Btn.visibility = View.VISIBLE
-//                my_Btn.visibility = View.INVISIBLE
             }
             2-> {
                 if(player == 2){
@@ -393,23 +369,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 else{
                     userTurn.text = "Player Two's Turn"
                 }
-
-//                if(displayedBoard == 1){
-//                    boardTitle.text = resources.getString(R.string.your_ships)
-//                    my_Btn.visibility= View.INVISIBLE
-//                    opp_Btn.visibility= View.VISIBLE
-//                }
-//                else{
-//                    boardTitle.text = resources.getString(R.string.opponents_ships)
-//                    my_Btn.visibility= View.VISIBLE
-//                    opp_Btn.visibility= View.INVISIBLE
-//                }
-//                my_Btn.visibility = View.VISIBLE
-//                opp_Btn.visibility = View.INVISIBLE
             }
             else -> {
                 userTurn.text = "Turn State is Wrong"
-                Log.d( TAG, "something is wrong")
                 Log.d( TAG, "ILLEGAL STATE: $state")
 
             }
@@ -432,7 +394,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         if(response.get("state").toString() == "3"){
                             gameRepo.updateScore(gameID.toString(), true)
 
-                            Log.d(TAG, gameRepo.currentGame.red_hits.toString())
                             if(gameRepo.currentGame.red_hits == 5){
                                 gameRepo.finishGame(gameID.toString())
                                 serverInteractions.finishGame(gameID.toString(), deviceID)
