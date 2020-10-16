@@ -65,7 +65,7 @@ class MessagingService: FirebaseMessagingService() {
                     gameRepo.updateUserName(id, username)
                 }
             }
-            "finished" -> {
+            "finish" -> {
                 if (id != null) {
                     gameRepo.finishGame(id)
                 }
