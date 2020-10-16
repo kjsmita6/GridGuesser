@@ -211,6 +211,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                             player = 2
                     }
                     loadBoards()
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                 }
             }
         )
