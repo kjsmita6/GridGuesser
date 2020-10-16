@@ -144,9 +144,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         gameRepo.remainingShips.value = 0
                         placeShips()
                         observeShips = false
-                        setupBoard(playerOneBoard, 1)
+                        updateGameView(gameRepo.state, 5)
+                    } else {
+                        updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                     }
-                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                 }
             }
         })
@@ -189,10 +190,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     gameRepo.state += 1
                     if(gameRepo.state == 1){
                         updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                        setupBoard(playerOneBoard, 1)
                     }
                     gameRepo.notifyChange(gameID.toString(), false)
                 }
-                else if(gameRepo.eventID == gameID && gameRepo.event == "finished"){
+                else if(gameRepo.eventID == gameID && gameRepo.event == "finish"){
                     gameRepo.notifyChange(gameID.toString(), false)
                     gameEnded(false)
                 }
@@ -349,8 +351,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 my_Btn.visibility= View.INVISIBLE
             }
             0 -> { //placing ships
-                userTurn.text = "Waiting for other player to place ships".toString()
-                if (initialShips == gameRepo.remainingShips.value){
+
+                userTurn.text = "Waiting for other player to place ships"
+                Log.d(TAG, "$initialShips AND NUM $numShips")
+                if (initialShips != numShips){
                     userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
                 }
                 boardTitle.text = resources.getString(R.string.your_ships)
