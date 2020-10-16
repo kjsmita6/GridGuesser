@@ -14,7 +14,8 @@ class GameRepository private constructor(var context: Context) {
 
     var state = 0 // 0 - place ships, 1 - player one turn, 2- player two turn
     var id = -1
-    var remainingShips = MutableLiveData<Int>();
+    var remainingShips = MutableLiveData<Int>()
+    var currentGame = Game(-1, "", "", "", -1, -1, -1, -1, -1)
 
     var changeFlag = MutableLiveData<Boolean>(false)
     var event: String = ""
@@ -67,16 +68,22 @@ class GameRepository private constructor(var context: Context) {
     }
 
     fun updateScore(id: String, player1: Boolean) {
-        executor.execute {
-            if(player1) {
-                gameDao.updateScore(id)
-            } else {
-                gameDao.updateScore2(id)
+        if(player1) {
+            if(id == currentGame.game_id.toString()){
+                currentGame.red_hits++
             }
+            executor.execute {
+                gameDao.updateScore(id)
+            }
+        } else {
+            gameDao.updateScore2(id)
         }
     }
 
     fun incStatus(id: String)  {
+        if(id == currentGame.game_id.toString()){
+            currentGame.status++
+        }
         executor.execute {
             gameDao.incStatus(id)
         }

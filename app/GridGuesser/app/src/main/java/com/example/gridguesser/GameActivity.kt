@@ -114,6 +114,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             Observer { thisGame ->
                 if(observeState){
                     observeState = false;
+                    gameRepo.currentGame = thisGame
                     gameRepo.state = thisGame.status
                     Log.d(TAG, "INITIAL STATUS: ${gameRepo.state}")
                     updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
@@ -152,16 +153,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
         opp_Btn.setOnClickListener {
             setupBoard(playerTwoBoard, 2)
-//            my_Btn.visibility= View.VISIBLE
-//            opp_Btn.visibility= View.INVISIBLE
-            //boardTitle.text = resources.getString(R.string.opponents_ships)
         }
 
         my_Btn.setOnClickListener {
             setupBoard(playerOneBoard, 1)
-//            opp_Btn.visibility = View.VISIBLE
-//            my_Btn.visibility = View.INVISIBLE
-            //boardTitle.text = resources.getString(R.string.your_ships)
         }
 
         bg = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.gameBackground)
@@ -321,14 +316,16 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         var state = gameRepo.state
         if(whichBoard == 1){
             boardTitle.text = resources.getString(R.string.your_ships)
-            if(state > 0 ) {
+
+            if(state > 0) {
                 my_Btn.visibility = View.INVISIBLE
                 opp_Btn.visibility = View.VISIBLE
             }
         }
         else{
             boardTitle.text = resources.getString(R.string.opponents_ships)
-            if(state > 0 ) {
+
+            if(state > 0) {
                 my_Btn.visibility = View.VISIBLE
                 opp_Btn.visibility = View.INVISIBLE
             }
@@ -426,19 +423,14 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         gameRepo.alternateTurn(gameID.toString())
 
                         if(response.get("state").toString() == "3"){
-                            var observeScore = true
                             gameRepo.updateScore(gameID.toString(), true)
-                            gameRepo.getGame(gameID.toString()).observe(this, Observer{ response ->
-                                if(observeScore){
-                                    observeScore = false
-                                    Log.d(TAG, response.red_hits.toString())
-                                    if(response.red_hits == 5){
-                                        gameRepo.finishGame(gameID.toString())
-                                        serverInteractions.finishGame(gameID.toString(), deviceID)
-                                        gameEnded(true)
-                                    }
-                                }
-                            })
+
+                            Log.d(TAG, gameRepo.currentGame.red_hits.toString())
+                            if(gameRepo.currentGame.red_hits == 5){
+                                gameRepo.finishGame(gameID.toString())
+                                serverInteractions.finishGame(gameID.toString(), deviceID)
+                                gameEnded(true)
+                            }
                         }
                         updateGameView(gameRepo.state, 0)
                         if(displayedBoard == 2){
