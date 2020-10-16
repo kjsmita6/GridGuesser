@@ -373,6 +373,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                             gameRepo.alternateTurn(gameID.toString())
                         }
                         updateGameView(gameRepo.state, 0)
+                        if(displayedBoard == 2){
+                            setupBoard(playerTwoBoard, 2)
+                        }
                     }
                 }
             }
