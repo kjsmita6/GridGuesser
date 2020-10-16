@@ -102,6 +102,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         } else {
             gameRepo.id = gameID
         }
+        gameRepo.notifyChange(gameID.toString(), false)
 
         gameRepo.remainingShips.value = 0
 
@@ -186,11 +187,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     if(displayedBoard == 1){
                         setupBoard(playerOneBoard, 1)
                     }
+                    gameRepo.notifyChange(gameID.toString(), false)
                 } else if(gameRepo.eventID == gameID && gameRepo.event == "board"){ //if the other player finished placing their ships
                     gameRepo.state += 1
                     if(gameRepo.state != 0){
                         updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                     }
+                    gameRepo.notifyChange(gameID.toString(), false)
                 }
             }
         )
@@ -374,6 +377,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         playerTwoBoard[position] = response.get("state").toString()
                         if(response.get("state").toString() == "2"){
                             gameRepo.alternateTurn(gameID.toString())
+                        } else {
+                            gameRepo.updateScore(gameID.toString(), true)
                         }
                         updateGameView(gameRepo.state, 0)
                         if(displayedBoard == 2){
