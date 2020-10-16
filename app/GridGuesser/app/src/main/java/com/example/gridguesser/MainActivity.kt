@@ -8,15 +8,12 @@ import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.example.gridguesser.activegames.ActiveGamesActivity
 import com.example.gridguesser.database.GameRepository
 import com.example.gridguesser.deviceID.DeviceID
 import com.example.gridguesser.http.ServerInteractions
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.messaging.FirebaseMessaging
 import java.lang.Exception
 
 

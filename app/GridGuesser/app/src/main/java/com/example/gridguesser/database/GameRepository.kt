@@ -47,7 +47,7 @@ class GameRepository private constructor(var context: Context) {
         fun get(): GameRepository {
             return INSTANCE
                 ?:
-                throw IllegalStateException("CrimeRepository must be initialized")
+                throw IllegalStateException("GameRepository must be initialized")
         }
     }
 
