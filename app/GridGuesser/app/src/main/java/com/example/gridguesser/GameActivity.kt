@@ -263,7 +263,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         Log.d(TAG, "LOADING: $response")
                         gameRepo.state = response.get("turn").toString().toInt()
 
-                        if(response.get("player1").toString() == deviceID){
+                        Log.d(TAG, "${response.get("player1")} AND D-ID $deviceID")
+                        if(response.get("player1").toString().replace("\"", "") == deviceID){
                             playerOneBoard = parseBoard(response.get("player1_board").toString(), true)
                             playerTwoBoard = parseBoard(response.get("player2_board").toString(), false)
                         } else {
@@ -285,7 +286,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         for(i in 1 until splitBoard.size){
             if(i % 3 == 0){
                 var value = splitBoard[i][0].toString()
-                if(!isThisPlayer && (value=="1")){ //don't show opponents ships
+                if(!isThisPlayer && value=="1"){ //don't show opponents ships
+                    Log.d(TAG, "FOUND OPPONENT SHIP AT ${toReturn.size-1}")
                     value = "0"
                 }
                 toReturn.add(value)
