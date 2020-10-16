@@ -196,6 +196,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     }
                     gameRepo.notifyChange(gameID.toString(), false)
                 }
+                else if(gameRepo.eventID == gameID && gameRepo.event == "finished"){
+                    gameRepo.notifyChange(gameID.toString(), false)
+                    gameEnded(false)
+                }
             }
         )
 
@@ -417,10 +421,21 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         Log.d(TAG, "MOVE RESPONSE: $response")
                         gameRepo.state = response.get("turn").toString().toInt()
                         playerTwoBoard[position] = response.get("state").toString()
-                        if(response.get("state").toString() == "2"){
-                            gameRepo.alternateTurn(gameID.toString())
-                        } else {
+                        gameRepo.alternateTurn(gameID.toString())
+
+                        if(response.get("state").toString() == "3"){
+                            var observeScore = true
                             gameRepo.updateScore(gameID.toString(), true)
+                            gameRepo.getGame(gameID.toString()).observe(this, Observer{ response ->
+                                if(observeScore){
+                                    observeScore = false
+                                    if(response.red_hits == 5){
+                                        gameRepo.finishGame(gameID.toString())
+                                        serverInteractions.finishGame(gameID.toString(), deviceID)
+                                        gameEnded(true)
+                                    }
+                                }
+                            })
                         }
                         updateGameView(gameRepo.state, 0)
                         if(displayedBoard == 2){
@@ -430,6 +445,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 }
             }
         )
+    }
+
+    private fun gameEnded(youWon: Boolean){
+        val Intent = ResultsActivity.newIntent(this, youWon)
+        startActivity(Intent)
     }
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {

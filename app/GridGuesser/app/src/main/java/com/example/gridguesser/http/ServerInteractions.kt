@@ -125,6 +125,31 @@ class ServerInteractions {
         return responseLiveData
     }
 
+    fun finishGame(gameID: String, id: String): LiveData<JsonObject> {
+        val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
+        val gameBody = JsonObject()
+        gameBody.addProperty("id", gameID)
+        gameBody.addProperty("player", id)
+        val joinGameRequest: Call<JsonObject> = serverAPI.finishGame(gameBody)
+        joinGameRequest.enqueue(object : Callback<JsonObject> {
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e(TAG, "Failed to join game", t)
+                responseLiveData.value = null
+            }
+
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+                Log.d(TAG, response.toString())
+                responseLiveData.value = response.body()
+            }
+        })
+
+        return responseLiveData
+    }
+
     fun addUser(deviceID: String, token: String): LiveData<JsonObject> {
         val responseLiveData: MutableLiveData<JsonObject> = MutableLiveData()
         val userBody = JsonObject()

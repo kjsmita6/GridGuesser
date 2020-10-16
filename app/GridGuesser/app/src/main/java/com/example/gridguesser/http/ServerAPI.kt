@@ -32,4 +32,8 @@ interface ServerAPI {
 
     @POST("move")
     fun move(@Body info: JsonObject): Call<JsonObject>
+
+    @POST("finishgame")
+    fun finishGame(@Body info: JsonObject): Call<JsonObject>
+
 }
