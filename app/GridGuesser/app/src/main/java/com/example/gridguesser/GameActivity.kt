@@ -391,10 +391,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         val light = event.values[0]
 
         if (light < 20 && settings.use_daylight) {
-            bg.rootView.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
+            bg.rootView.setBackgroundColor(resources.getColor(R.color.colorPrimary))
         }
         else {
-            bg.rootView.setBackgroundColor(resources.getColor(android.R.color.white))
+            bg.rootView.setBackgroundColor(resources.getColor(R.color.colorSecondary))
         }
     }
 

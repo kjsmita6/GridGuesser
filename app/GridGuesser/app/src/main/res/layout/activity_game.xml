@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".GameActivity"
-    android:id="@+id/gameBackground">
-
+    android:id="@+id/gameBackground"
+    android:background="@color/colorSecondary">
 
     <GridView
         android:id="@+id/gridview"
@@ -28,17 +28,19 @@
         android:gravity="center_horizontal"
         android:padding="0dp"
         android:text="Place Ships: 5"
-        android:textSize="30dp"
+        style="@style/header2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/help"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/button"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
+        android:background="@drawable/button_primary"
         android:text="Help/Rules"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/home" />
@@ -48,6 +50,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Home"
+        style="@style/button"
+        android:background="@drawable/button_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.724"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,6 +62,8 @@
         android:layout_width="36dp"
         android:layout_height="61dp"
         android:text=">"
+        style="@style/button"
+        android:background="@drawable/button_primary"
         app:layout_constraintBottom_toBottomOf="@+id/gridview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/boardTitle" />
@@ -67,6 +73,8 @@
         android:layout_width="36dp"
         android:layout_height="61dp"
         android:text="@string/to_player"
+        style="@style/button"
+        android:background="@drawable/button_primary"
         app:layout_constraintBottom_toBottomOf="@+id/gridview"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/boardTitle" />
@@ -78,7 +86,7 @@
         android:padding="0dp"
         android:paddingBottom="0dp"
         android:text="@string/opponents_ships"
-        android:textSize="20dp"
+        style="@style/header2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
