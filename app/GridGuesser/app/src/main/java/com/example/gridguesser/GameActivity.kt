@@ -138,16 +138,16 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
         opp_Btn.setOnClickListener {
             setupBoard(playerTwoBoard, 2)
-            my_Btn.visibility= View.VISIBLE
-            opp_Btn.visibility= View.INVISIBLE
-            boardTitle.text = resources.getString(R.string.opponents_ships)
+//            my_Btn.visibility= View.VISIBLE
+//            opp_Btn.visibility= View.INVISIBLE
+            //boardTitle.text = resources.getString(R.string.opponents_ships)
         }
 
         my_Btn.setOnClickListener {
             setupBoard(playerOneBoard, 1)
-            opp_Btn.visibility = View.VISIBLE
-            my_Btn.visibility = View.INVISIBLE
-            boardTitle.text = resources.getString(R.string.your_ships)
+//            opp_Btn.visibility = View.VISIBLE
+//            my_Btn.visibility = View.INVISIBLE
+            //boardTitle.text = resources.getString(R.string.your_ships)
         }
 
         bg = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.gameBackground)
@@ -174,7 +174,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     setupBoard(playerOneBoard, 1)
                 } else if(gameRepo.eventID == gameID && gameRepo.event == "board"){ //if the other player finished placing their ships
                     gameRepo.state += 1
-                    if(gameRepo.state != 0){
+                    if(gameRepo.state == 1){
                         updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                     }
                 }
@@ -281,6 +281,17 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     }
 
     private fun setupBoard (playerBoard: MutableList<String>, whichBoard: Int) {
+        if(whichBoard == 1){
+            boardTitle.text = resources.getString(R.string.your_ships)
+            my_Btn.visibility= View.INVISIBLE
+            opp_Btn.visibility= View.VISIBLE
+        }
+        else{
+            boardTitle.text = resources.getString(R.string.opponents_ships)
+            my_Btn.visibility= View.VISIBLE
+            opp_Btn.visibility= View.INVISIBLE
+        }
+
         gridView = findViewById(R.id.gridview)
         val adapter = SpaceAdapter(this, playerBoard, player, whichBoard)
         gridView.adapter = adapter
