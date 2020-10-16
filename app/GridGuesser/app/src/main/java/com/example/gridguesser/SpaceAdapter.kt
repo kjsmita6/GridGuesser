@@ -23,6 +23,7 @@ class SpaceAdapter (
 
     interface Callbacks {
         fun onSquareSelected(position: Int)
+        fun assignShip(position: Int)
     }
 
     private var callbacks: Callbacks? = null
@@ -78,6 +79,7 @@ class SpaceAdapter (
                     Log.d(TAG, "state 0")
                     squares[position] = "1"
                     gameRepo.remainingShips.value = gameRepo.remainingShips.value?.plus(1)
+                    callbacks?.assignShip(position)
                     notifyDataSetChanged()
                 }
                 else if (gameRepo.state == player && whichBoard == 2){

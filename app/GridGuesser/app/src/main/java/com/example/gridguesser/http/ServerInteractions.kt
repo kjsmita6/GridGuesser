@@ -231,6 +231,7 @@ class ServerInteractions {
         val userBody = JsonObject()
         userBody.addProperty("game", gameID)
         userBody.addProperty("player", deviceID)
+        Log.d(TAG, board)
         userBody.addProperty("board", board)
         val makeBoardRequest: Call<JsonObject> = serverAPI.makeBoard(userBody)
         makeBoardRequest.enqueue(object : Callback<JsonObject> {

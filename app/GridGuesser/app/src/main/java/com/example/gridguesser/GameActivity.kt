@@ -80,6 +80,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         move(position)
     }
 
+    override fun assignShip(position: Int) {
+        playerOneBoard[position] = "1"
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -223,6 +227,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 } else {
                     "},"
                 }
+                Log.d(TAG, "AT $i, $j: ${playerOneBoard[11*i+j]}")
             }
 
             board += if(i == 10){
