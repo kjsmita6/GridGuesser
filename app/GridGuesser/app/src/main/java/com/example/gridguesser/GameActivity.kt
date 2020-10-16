@@ -329,6 +329,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
             0 -> { //placing ships
                 userTurn.text = "Waiting for other player to place ships".toString()
+                if (initialShips != gameRepo.remainingShips.value){
+                    userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
+                }
                 boardTitle.text = resources.getString(R.string.your_ships)
                 opp_Btn.visibility= View.INVISIBLE
                 my_Btn.visibility= View.INVISIBLE
