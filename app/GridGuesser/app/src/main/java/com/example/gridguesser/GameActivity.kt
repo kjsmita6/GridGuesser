@@ -179,7 +179,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     gameRepo.state = player
                     loadBoards()
                     updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
-                    setupBoard(playerOneBoard, 1)
+                    //setupBoard(playerOneBoard, 1)
                 } else if(gameRepo.eventID == gameID && gameRepo.event == "board"){ //if the other player finished placing their ships
                     gameRepo.state += 1
                     if(gameRepo.state == 1){
@@ -344,8 +344,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 else{
                     userTurn.text = "Player One's Turn"
                 }
-                opp_Btn.visibility = View.VISIBLE
-                my_Btn.visibility = View.INVISIBLE
+//                opp_Btn.visibility = View.VISIBLE
+//                my_Btn.visibility = View.INVISIBLE
             }
             2-> {
                 if(player == 2){
@@ -354,8 +354,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 else{
                     userTurn.text = "Player Two's Turn"
                 }
-                my_Btn.visibility = View.VISIBLE
-                opp_Btn.visibility = View.INVISIBLE
+//                my_Btn.visibility = View.VISIBLE
+//                opp_Btn.visibility = View.INVISIBLE
             }
             else -> {
                 userTurn.text = "Turn State is Wrong"
