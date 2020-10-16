@@ -309,13 +309,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
         if(whichBoard == 1){
             boardTitle.text = resources.getString(R.string.your_ships)
-//            my_Btn.visibility= View.INVISIBLE
-//            opp_Btn.visibility= View.VISIBLE
+            my_Btn.visibility= View.INVISIBLE
+            opp_Btn.visibility= View.VISIBLE
         }
         else{
             boardTitle.text = resources.getString(R.string.opponents_ships)
-//            my_Btn.visibility= View.VISIBLE
-//            opp_Btn.visibility= View.INVISIBLE
+            my_Btn.visibility= View.VISIBLE
+            opp_Btn.visibility= View.INVISIBLE
         }
 
         displayedBoard = whichBoard
@@ -353,16 +353,16 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     userTurn.text = "Player One's Turn"
                 }
 
-                if(displayedBoard == 1){
-                    boardTitle.text = resources.getString(R.string.your_ships)
-                    my_Btn.visibility= View.INVISIBLE
-                    opp_Btn.visibility= View.VISIBLE
-                }
-                else{
-                    boardTitle.text = resources.getString(R.string.opponents_ships)
-                    my_Btn.visibility= View.VISIBLE
-                    opp_Btn.visibility= View.INVISIBLE
-                }
+//                if(displayedBoard == 1){
+//                    boardTitle.text = resources.getString(R.string.your_ships)
+//                    my_Btn.visibility= View.INVISIBLE
+//                    opp_Btn.visibility= View.VISIBLE
+//                }
+//                else{
+//                    boardTitle.text = resources.getString(R.string.opponents_ships)
+//                    my_Btn.visibility= View.VISIBLE
+//                    opp_Btn.visibility= View.INVISIBLE
+//                }
 //                opp_Btn.visibility = View.VISIBLE
 //                my_Btn.visibility = View.INVISIBLE
             }
@@ -374,16 +374,16 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     userTurn.text = "Player Two's Turn"
                 }
 
-                if(displayedBoard == 1){
-                    boardTitle.text = resources.getString(R.string.your_ships)
-                    my_Btn.visibility= View.INVISIBLE
-                    opp_Btn.visibility= View.VISIBLE
-                }
-                else{
-                    boardTitle.text = resources.getString(R.string.opponents_ships)
-                    my_Btn.visibility= View.VISIBLE
-                    opp_Btn.visibility= View.INVISIBLE
-                }
+//                if(displayedBoard == 1){
+//                    boardTitle.text = resources.getString(R.string.your_ships)
+//                    my_Btn.visibility= View.INVISIBLE
+//                    opp_Btn.visibility= View.VISIBLE
+//                }
+//                else{
+//                    boardTitle.text = resources.getString(R.string.opponents_ships)
+//                    my_Btn.visibility= View.VISIBLE
+//                    opp_Btn.visibility= View.INVISIBLE
+//                }
 //                my_Btn.visibility = View.VISIBLE
 //                opp_Btn.visibility = View.INVISIBLE
             }
