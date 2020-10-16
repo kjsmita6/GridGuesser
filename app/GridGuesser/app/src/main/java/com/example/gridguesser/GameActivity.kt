@@ -44,6 +44,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     private val gameRepo = GameRepository.get()
     private val serverInteractions = ServerInteractions.get()
     private lateinit var deviceID: String
+    private var displayedBoard: Int = 1
 
     private var playerOneBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
@@ -179,7 +180,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     gameRepo.state = player
                     loadBoards()
                     updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
-                    setupBoard(playerOneBoard, 1)
+                    if(displayedBoard == 1){
+                        setupBoard(playerOneBoard, 1)
+                    }
                 } else if(gameRepo.eventID == gameID && gameRepo.event == "board"){ //if the other player finished placing their ships
                     gameRepo.state += 1
                     if(gameRepo.state != 0){
@@ -302,6 +305,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     }
 
     private fun setupBoard (playerBoard: MutableList<String>, whichBoard: Int) {
+        displayedBoard = whichBoard
         gridView = findViewById(R.id.gridview)
         val adapter = SpaceAdapter(this, playerBoard, player, whichBoard)
         gridView.adapter = adapter
