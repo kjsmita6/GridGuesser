@@ -27,18 +27,12 @@ class OptionsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_options)
 
         var swchLight = findViewById<Switch>(R.id.switch2)
-        var swchTemp = findViewById<Switch>(R.id.switch1)
         var usrname = findViewById<EditText>(R.id.user_name)
         usrname.setText(settings.username, TextView.BufferType.EDITABLE);
         swchLight.isChecked = settings.use_daylight
-        swchTemp.isChecked = settings.use_temp
 
         swchLight.setOnCheckedChangeListener() { _, isChecked ->
             settings.use_daylight = isChecked
-        }
-
-        swchTemp.setOnCheckedChangeListener() { _, isChecked ->
-            settings.use_temp = isChecked
         }
 
         usrname.addTextChangedListener(object : TextWatcher {
