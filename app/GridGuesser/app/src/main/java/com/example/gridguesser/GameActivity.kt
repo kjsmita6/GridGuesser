@@ -143,6 +143,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         gameRepo.remainingShips.value = 0
                         placeShips()
                         observeShips = false
+                        setupBoard(playerOneBoard, 1)
                     }
                     updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                 }
@@ -264,6 +265,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 }
             })
         gameRepo.incStatus(gameID.toString())
+        setupBoard(playerOneBoard, 1)
     }
 
     private fun loadBoards(){
@@ -316,17 +318,17 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     }
 
     private fun setupBoard (playerBoard: MutableList<String>, whichBoard: Int) {
-        var state = GameRepository.get().state
+        var state = gameRepo.state
         if(whichBoard == 1){
             boardTitle.text = resources.getString(R.string.your_ships)
-            if(state != 0 || state != 1) {
+            if(state > 0 ) {
                 my_Btn.visibility = View.INVISIBLE
                 opp_Btn.visibility = View.VISIBLE
             }
         }
         else{
             boardTitle.text = resources.getString(R.string.opponents_ships)
-            if(state != 0 || state != 1) {
+            if(state > 0 ) {
                 my_Btn.visibility = View.VISIBLE
                 opp_Btn.visibility = View.INVISIBLE
             }
@@ -351,7 +353,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
             0 -> { //placing ships
                 userTurn.text = "Waiting for other player to place ships".toString()
-                if (initialShips != gameRepo.remainingShips.value){
+                if (initialShips == gameRepo.remainingShips.value){
                     userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
                 }
                 boardTitle.text = resources.getString(R.string.your_ships)
@@ -429,6 +431,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                             gameRepo.getGame(gameID.toString()).observe(this, Observer{ response ->
                                 if(observeScore){
                                     observeScore = false
+                                    Log.d(TAG, response.red_hits.toString())
                                     if(response.red_hits == 5){
                                         gameRepo.finishGame(gameID.toString())
                                         serverInteractions.finishGame(gameID.toString(), deviceID)
