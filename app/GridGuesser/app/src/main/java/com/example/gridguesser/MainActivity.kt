@@ -94,6 +94,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.settings)?.setOnClickListener {
             settings()
         }
+
+        findViewById<ImageButton>(R.id.rules)?.setOnClickListener {
+            rules()
+        }
     }
 
     private fun activeGames(){
@@ -112,7 +116,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun settings(){
-        val intent = JoinActivity.newIntent(this@MainActivity)
+        val intent = Intent(this@MainActivity, OptionsActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun rules(){
+        val intent = Intent(this@MainActivity, RulesActivity::class.java)
         startActivity(intent)
     }
 

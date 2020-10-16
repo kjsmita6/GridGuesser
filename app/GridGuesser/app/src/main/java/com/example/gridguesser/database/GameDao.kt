@@ -8,7 +8,7 @@ import androidx.room.Update
 
 @Dao
 interface GameDao {
-    @Query("SELECT * FROM active_games ORDER BY hasChanged DESC, title ASC")
+    @Query("SELECT * FROM active_games WHERE status < 5 ORDER BY hasChanged DESC, title ASC")
     fun getGames(): LiveData<List<Game>>
 
     @Query("SELECT * FROM active_games WHERE game_id = :id")
@@ -20,7 +20,7 @@ interface GameDao {
     @Query("Update active_games SET blue_team = :uname WHERE game_id = :id")
     fun updateUserName(id: String, uname: String)
 
-    @Query("Update active_games SET status = 0 WHERE game_id = :id")
+    @Query("Update active_games SET status = 5 WHERE game_id = :id")
     fun finishGame(id: String)
 
     @Query("Update active_games SET red_hits = red_hits + 1 WHERE game_id = :id")

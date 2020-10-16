@@ -76,7 +76,6 @@ class SpaceAdapter (
             spaceView.spaceBtn.setOnClickListener {
                 Log.d(TAG, "button pressed")
                 if ((gameRepo.state == 0 || gameRepo.state == -1) && (squares[position] == "0" || squares[position] == "")) {
-                    Log.d(TAG, "state 0")
                     squares[position] = "1"
                     callbacks?.assignShip(position)
                     gameRepo.remainingShips.value = gameRepo.remainingShips.value?.plus(1)
