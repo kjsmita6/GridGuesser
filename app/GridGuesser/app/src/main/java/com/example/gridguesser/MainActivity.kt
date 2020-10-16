@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -89,6 +90,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.join_game)?.setOnClickListener {
             joinGame()
         }
+
+        findViewById<ImageButton>(R.id.settings)?.setOnClickListener {
+            settings()
+        }
     }
 
     private fun activeGames(){
@@ -102,6 +107,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun joinGame(){
+        val intent = JoinActivity.newIntent(this@MainActivity)
+        startActivity(intent)
+    }
+
+    private fun settings(){
         val intent = JoinActivity.newIntent(this@MainActivity)
         startActivity(intent)
     }

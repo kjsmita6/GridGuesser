@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@color/colorSecondary">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textSize="30sp"
+        style="@style/header1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -21,6 +22,7 @@
 
     <TextView
         android:id="@+id/title_subtext"
+        style="@style/header2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/title_subtext"
@@ -37,66 +39,67 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_subtext"
-        app:layout_constraintVertical_bias="0.577">
+        app:layout_constraintVertical_bias="0.283">
 
         <Button
             android:id="@+id/create_game"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="#FFFFFF"
             android:layout_margin="10dp"
-            android:background="@drawable/main_menu_button"
-            android:text="@string/create_game" />
+            android:layout_weight="1"
+            android:background="@drawable/button_primary"
+            android:text="@string/create_game"
+            style="@style/button"/>
 
         <Button
             android:id="@+id/join_game"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="#FFFFFF"
             android:layout_margin="10dp"
-            android:background="@drawable/main_menu_button"
-            android:text="@string/join_game" />
+            android:layout_weight="1"
+            android:background="@drawable/button_primary"
+            android:text="@string/join_game"
+            style="@style/button"/>
 
         <Button
             android:id="@+id/active_games"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="#FFFFFF"
             android:layout_margin="10dp"
-            android:background="@drawable/main_menu_button"
-            android:text="@string/active_games" />
+            android:layout_weight="1"
+            android:background="@drawable/button_primary"
+            android:text="@string/active_games"
+            style="@style/button"/>
 
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/settings"
         android:layout_width="46dp"
         android:layout_height="46dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/rules"
         android:layout_width="46dp"
         android:layout_height="46dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageButton" />
+        app:layout_constraintStart_toEndOf="@+id/settings" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/imageButton"
         android:layout_width="46dp"
         android:layout_height="46dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageButton2" />
+        app:layout_constraintStart_toEndOf="@+id/rules" />
 
     <TextView
         android:id="@+id/user_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="20dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
