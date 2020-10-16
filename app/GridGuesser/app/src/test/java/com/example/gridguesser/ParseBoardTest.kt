@@ -1,19 +1,12 @@
 package com.example.gridguesser
 
-import android.app.Application
-import android.content.Context
-import android.util.Log
-import com.example.gridguesser.database.GameRepository
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
-import org.mockito.Mock
-import org.mockito.Mockito.mock
-import javax.security.auth.Subject
 import kotlin.system.measureTimeMillis
 
-class GameActivityTest {
+class ParseBoardTest {
     private lateinit var subject: ParseBoard
 
     @Before
