@@ -24,6 +24,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -49,5 +53,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    testImplementation 'org.mockito:mockito-core:2.25.0'
+    testImplementation 'org.mockito:mockito-inline:2.25.0'
+
 
 }

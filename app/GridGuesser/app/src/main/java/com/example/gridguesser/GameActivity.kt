@@ -47,6 +47,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     private lateinit var deviceID: String
     private var displayedBoard: Int = 1
 
+    private val parseBoard = ParseBoard()
+
     private var playerOneBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
         "1", "", "", "", "", "", "", "", "", "", "",
@@ -84,6 +86,39 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     override fun assignShip(position: Int) {
         playerOneBoard[position] = "1"
+    }
+
+    fun getPlayerOneBoard(): MutableList<String>{
+        return mutableListOf(
+            " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+            "1", "", "", "", "", "", "", "", "", "", "",
+            "2", "", "", "", "", "", "", "", "", "", "",
+            "3", "", "", "", "", "", "", "", "", "", "",
+            "4", "", "", "", "", "", "", "", "", "", "",
+            "5", "", "", "", "", "", "", "", "", "", "",
+            "6", "", "", "", "", "", "", "", "", "", "",
+            "7", "", "", "", "", "", "", "", "", "", "",
+            "8", "", "", "", "", "", "", "", "", "", "",
+            "9", "", "", "", "", "", "", "", "", "", "",
+            "10", "", "", "", "", "", "", "", "", "", ""
+
+        )
+    }
+    fun setPlayerOneBoard(){
+        playerOneBoard = mutableListOf(
+            " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+            "1", "", "", "", "", "", "", "", "", "", "",
+            "2", "", "", "", "", "", "", "", "", "", "",
+            "3", "", "", "", "", "", "", "", "", "", "",
+            "4", "", "", "", "", "", "", "", "", "", "",
+            "5", "", "", "", "", "", "", "", "", "", "",
+            "6", "", "", "", "", "", "", "", "", "", "",
+            "7", "", "", "", "", "", "", "", "", "", "",
+            "8", "", "", "", "", "", "", "", "", "", "",
+            "9", "", "", "", "", "", "", "", "", "", "",
+            "10", "", "", "", "", "", "", "", "", "", ""
+
+        )
     }
 
 
@@ -271,11 +306,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         gameRepo.state = response.get("turn").toString().toInt()
 
                         if(response.get("player1").toString().replace("\"", "") == deviceID){
-                            playerOneBoard = parseBoard(response.get("player1_board").toString(), true)
-                            playerTwoBoard = parseBoard(response.get("player2_board").toString(), false)
+                            playerOneBoard = parseBoard.parseBoard(response.get("player1_board").toString(), true)
+                            playerTwoBoard = parseBoard.parseBoard(response.get("player2_board").toString(), false)
                         } else {
-                            playerTwoBoard = parseBoard(response.get("player1_board").toString(), false)
-                            playerOneBoard = parseBoard(response.get("player2_board").toString(), true)
+                            playerTwoBoard = parseBoard.parseBoard(response.get("player1_board").toString(), false)
+                            playerOneBoard = parseBoard.parseBoard(response.get("player2_board").toString(), true)
                         }
 
                         if(displayedBoard == 1){
@@ -287,27 +322,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         )
     }
 
-    //change server board style to be the gridview style
-    private fun parseBoard(board: String, isThisPlayer: Boolean): MutableList<String>{
-        var toReturn: MutableList<String> = mutableListOf(" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "1")
-        val splitBoard = board.split(":")
-        var row = 2
-        for(i in 1 until splitBoard.size){
-            if(i % 3 == 0){
-                var value = splitBoard[i][0].toString()
-                if(!isThisPlayer && value=="1"){ //don't show opponents ships
-                    value = "0"
-                }
-                toReturn.add(value)
-            }
 
-            if(i % 30 == 0 && row < 11){
-                toReturn.add(row.toString())
-                row++
-            }
-        }
-        return toReturn
-    }
 
     private fun setupBoard (playerBoard: MutableList<String>, whichBoard: Int) {
         var state = gameRepo.state
