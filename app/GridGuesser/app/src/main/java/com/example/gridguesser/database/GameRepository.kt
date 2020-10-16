@@ -9,7 +9,7 @@ import java.util.concurrent.Executors
 
 private const val TAG = "GridGuesser"
 class GameRepository private constructor(var context: Context) {
-    var currentSettings: Settings = Settings(0, DeviceID.getDeviceID(context.contentResolver).substring(0, 5), false, false)
+    var currentSettings: Settings = Settings(0, DeviceID.getDeviceID(context.contentResolver).substring(0, 5), false)
     private val executor = Executors.newSingleThreadExecutor()
 
     var state = 0 // 0 - place ships, 1 - player one turn, 2- player two turn
@@ -47,7 +47,7 @@ class GameRepository private constructor(var context: Context) {
         fun get(): GameRepository {
             return INSTANCE
                 ?:
-                throw IllegalStateException("CrimeRepository must be initialized")
+                throw IllegalStateException("GameRepository must be initialized")
         }
     }
 

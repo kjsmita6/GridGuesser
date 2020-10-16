@@ -32,7 +32,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     private lateinit var boardTitle: TextView
     private lateinit var sensorManager: SensorManager
     private var light: Sensor? = null
-    private var temp: Sensor? = null
     private lateinit var bg: View
     private lateinit var settings: Settings
 
@@ -197,7 +196,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
-        temp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
 
         help.setOnClickListener {
             val intent = Intent(this, RulesActivity::class.java)
@@ -248,6 +246,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                             player = 2
                     }
                     loadBoards()
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
                 }
             }
         )
@@ -450,12 +449,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     override fun onResume() {
         super.onResume()
         sensorManager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL)
-        sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     override fun onPause() {
         super.onPause()
-        sensorManager.unregisterListener(this)
         sensorManager.unregisterListener(this)
     }
 

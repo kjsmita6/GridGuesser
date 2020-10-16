@@ -8,15 +8,12 @@ import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.example.gridguesser.activegames.ActiveGamesActivity
 import com.example.gridguesser.database.GameRepository
 import com.example.gridguesser.deviceID.DeviceID
 import com.example.gridguesser.http.ServerInteractions
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.messaging.FirebaseMessaging
 import java.lang.Exception
 
 
@@ -27,11 +24,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var serverInteractions: ServerInteractions
     private lateinit var deviceID: String
 
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "INTENT: ${intent.extras} AND ${intent.getStringExtra("Heck")}")
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -41,7 +33,6 @@ class MainActivity : AppCompatActivity() {
 
         val token = FirebaseInstanceId.getInstance().token
         Log.d(TAG, "Registration Token: = $token")
-        Log.d(TAG, "CREATE INTENT: $intent")
 
         serverInteractions = ServerInteractions.get()
         try {
@@ -128,12 +119,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         fun newIntent(packageContext: Context): Intent {
             return Intent(packageContext, MainActivity::class.java)
-        }
-
-        fun newIntent(packageContext: Context, data: String): Intent {
-            return Intent(packageContext, MainActivity::class.java).apply {
-                putExtra("Heck", data)
-            }
         }
     }
 }

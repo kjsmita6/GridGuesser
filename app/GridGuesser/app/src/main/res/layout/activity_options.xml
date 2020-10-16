@@ -43,16 +43,6 @@
             style="@style/button"
             app:layout_constraintTop_toBottomOf="parent"/>
 
-        <Switch
-            android:id="@+id/switch1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="20dp"
-            android:text="@string/switch_toggle_temp"
-            style="@style/button"
-            app:layout_constraintTop_toBottomOf="@+id/switch2"/>
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
