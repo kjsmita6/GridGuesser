@@ -309,16 +309,20 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     }
 
     private fun setupBoard (playerBoard: MutableList<String>, whichBoard: Int) {
-
+        var state = GameRepository.get().state
         if(whichBoard == 1){
             boardTitle.text = resources.getString(R.string.your_ships)
-            my_Btn.visibility= View.INVISIBLE
-            opp_Btn.visibility= View.VISIBLE
+            if(state != 0 || state != 1) {
+                my_Btn.visibility = View.INVISIBLE
+                opp_Btn.visibility = View.VISIBLE
+            }
         }
         else{
             boardTitle.text = resources.getString(R.string.opponents_ships)
-            my_Btn.visibility= View.VISIBLE
-            opp_Btn.visibility= View.INVISIBLE
+            if(state != 0 || state != 1) {
+                my_Btn.visibility = View.VISIBLE
+                opp_Btn.visibility = View.INVISIBLE
+            }
         }
 
         displayedBoard = whichBoard
