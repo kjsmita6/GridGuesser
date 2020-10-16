@@ -17,11 +17,13 @@ private const val TAG = "GridGuesser"
 class SpaceAdapter (
     private val context: Context?,
     private val squares: MutableList<String>,
-    private val player: Int
+    private val player: Int,
+    private val whichBoard: Int
 ) : BaseAdapter() {
 
     interface Callbacks {
         fun onSquareSelected(position: Int)
+        fun assignShip(position: Int)
     }
 
     private var callbacks: Callbacks? = null
@@ -72,17 +74,17 @@ class SpaceAdapter (
                 }
 
             spaceView.spaceBtn.setOnClickListener {
-                Log.d("SpaceAdapter", "button pressed")
+                Log.d(TAG, "button pressed")
                 if (gameRepo.state == 0 || gameRepo.state == -1) {
                     Log.d(TAG, "state 0")
                     squares[position] = "1"
                     gameRepo.remainingShips.value = gameRepo.remainingShips.value?.plus(1)
+                    callbacks?.assignShip(position)
                     notifyDataSetChanged()
                 }
-                else if (gameRepo.state == player){
-                    Log.d(TAG, "state not 0")
-                    val i = squares[position]
-                    when (i) {
+                else if (gameRepo.state == player && whichBoard == 2){
+                    Log.d(TAG, "GAME STATE $player")
+                    when (squares[position]) {
                         "0" -> {
                             callbacks?.onSquareSelected(position)
                         }
@@ -98,9 +100,6 @@ class SpaceAdapter (
                         else -> {
                         }
                     }
-
-                    //TODO: check if there is a ship on player two's board
-                    //TODO: send player one's move to server
                 }
             }
         }

@@ -44,7 +44,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     private val gameRepo = GameRepository.get()
     private val serverInteractions = ServerInteractions.get()
     private lateinit var deviceID: String
-    //private var isPlayerOne = true
+    private var displayedBoard: Int = 1
 
     private var playerOneBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
@@ -81,10 +81,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         move(position)
     }
 
+    override fun assignShip(position: Int) {
+        playerOneBoard[position] = "1"
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        Log.d(TAG, "CREATING GAME ACTIVITY")
 
         settings = gameRepo.currentSettings
         deviceID = DeviceID.getDeviceID(contentResolver)
@@ -99,20 +104,19 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
         getWhichPlayer()
 
+        var observeState = true
         gameRepo.getGame(gameID.toString()).observe(
             this,
             Observer { thisGame ->
-                gameRepo.state = thisGame.status
-                updateGameView(gameRepo.state, 0)
-                setupBoard(playerOneBoard)
+                if(observeState){
+                    observeState = false;
+                    gameRepo.state = thisGame.status
+                    Log.d(TAG, "INITIAL STATUS: ${gameRepo.state}")
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                    setupBoard(playerOneBoard, 1)
+                }
             }
         )
-
-        //using gameID, ask server for all game info
-        //convert game boards to array of states
-            //don't show opponents ships (1's -> 0's)
-            //determine number of ships remaining for each player
-        //Handle different game states
 
         opp_Btn = findViewById(R.id.goToOpponent)
         my_Btn = findViewById(R.id.goToPlayer)
@@ -123,33 +127,33 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
         updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
 
-            gameRepo.remainingShips.observe(
-            this,
-            Observer { ships ->
-                ships?.let {
-                    Log.d(TAG,"ships was changed")
+        var observeShips = true
+        gameRepo.remainingShips.observe(
+        this,
+        Observer { ships ->
+            ships?.let {
+                if (observeShips){
+                    Log.d(TAG,"#SHIPS WAS CHANGED")
                     if(initialShips == gameRepo.remainingShips.value){ //if this player has finished placing their ships
                         gameRepo.state += 1 //increment state (goes to 0 if other player hasn't finished with their ships, 1 otherwise)
                         gameRepo.remainingShips.value = -1
                         placeShips()
+                        observeShips = false
                     }
                     updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
-
                 }
-            })
-
-        if (gameRepo.state == 0)
-            setupBoard(playerOneBoard)
+            }
+        })
 
         opp_Btn.setOnClickListener {
-            setupBoard(playerTwoBoard)
+            setupBoard(playerTwoBoard, 2)
             my_Btn.visibility= View.VISIBLE
             opp_Btn.visibility= View.INVISIBLE
             boardTitle.text = resources.getString(R.string.opponents_ships)
         }
 
         my_Btn.setOnClickListener {
-            setupBoard(playerOneBoard)
+            setupBoard(playerOneBoard, 1)
             opp_Btn.visibility = View.VISIBLE
             my_Btn.visibility = View.INVISIBLE
             boardTitle.text = resources.getString(R.string.your_ships)
@@ -175,9 +179,15 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 if(gameRepo.eventID == gameID && gameRepo.event == "turn"){ //if the other player took their turn
                     gameRepo.state = player
                     loadBoards()
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                    if(displayedBoard == 1){
+                        setupBoard(playerOneBoard, 1)
+                    }
                 } else if(gameRepo.eventID == gameID && gameRepo.event == "board"){ //if the other player finished placing their ships
                     gameRepo.state += 1
-                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                    if(gameRepo.state != 0){
+                        updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                    }
                 }
             }
         )
@@ -185,17 +195,21 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     }
 
     private fun getWhichPlayer(){
+        var observePlayer = true
         serverInteractions.whichPlayer(deviceID, gameID).observe(
             this,
             Observer { response ->
-                response?.let {
-                    if(response.get("player").toString() == "1")
-                        player = 1
-                    else if(response.get("player").toString() == "2")
-                        player = 2
-                    Log.d(TAG, "player is $player")
+                if(observePlayer){
+                    observePlayer = false
+                    response?.let {
+                        if(response.get("player").toString() == "1")
+                            player = 1
+                        else if(response.get("player").toString() == "2")
+                            player = 2
+                        Log.d(TAG, "player is $player")
+                    }
+                    loadBoards()
                 }
-                loadBoards()
             }
         )
     }
@@ -216,6 +230,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 } else {
                     "},"
                 }
+                Log.d(TAG, "AT $i, $j: ${playerOneBoard[11*i+j]}")
             }
 
             board += if(i == 10){
@@ -225,47 +240,48 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
         }
         board += "]"
+
+        var observeBoard = true
         serverInteractions.makeBoard(gameID, deviceID, board).observe(
             this,
             Observer { response ->
-                response?.let {
-                    Log.d(TAG,"Updated board: $response")
+                if(observeBoard){
+                    observeBoard = false
+                    response?.let {
+                        Log.d(TAG,"SENT BOARD: $response")
+                    }
                 }
             })
         gameRepo.incStatus(gameID.toString())
     }
 
     private fun loadBoards(){
+        var observeLoad = true
         serverInteractions.getBoards(gameID).observe(
             this,
             Observer {response ->
-                response?.let {
-                    gameRepo.state = response.get("turn").toString().toInt()
+                if(observeLoad){
+                    observeLoad = false;
+                    response?.let {
+                        Log.d(TAG, "LOADING: $response")
+                        gameRepo.state = response.get("turn").toString().toInt()
 
-                    if(response.get("player1").toString() == deviceID){
-                        playerOneBoard = parseBoard(response.get("player1_board").toString(), true)
-                        playerTwoBoard = parseBoard(response.get("player2_board").toString(), false)
-                    } else {
-                        playerOneBoard = parseBoard(response.get("player1_board").toString(), false)
-                        playerTwoBoard = parseBoard(response.get("player2_board").toString(), true)
+                        Log.d(TAG, "${response.get("player1")} AND D-ID $deviceID")
+                        if(response.get("player1").toString().replace("\"", "") == deviceID){
+                            playerOneBoard = parseBoard(response.get("player1_board").toString(), true)
+                            playerTwoBoard = parseBoard(response.get("player2_board").toString(), false)
+                        } else {
+                            playerTwoBoard = parseBoard(response.get("player1_board").toString(), false)
+                            playerOneBoard = parseBoard(response.get("player2_board").toString(), true)
+                        }
                     }
-                    getGameState()
                 }
             }
         )
     }
 
-    private fun getGameState(){
-        gameRepo.getGame(gameID.toString()).observe(
-            this,
-            Observer { thisGame ->
-                gameRepo.state = thisGame.status
-                updateGameView(gameRepo.state, 0)
-                setupBoard(playerOneBoard)
-            }
-        )
-    }
 
+    //change server board style to be the gridview style
     private fun parseBoard(board: String, isThisPlayer: Boolean): MutableList<String>{
         var toReturn: MutableList<String> = mutableListOf(" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "1")
         val splitBoard = board.split(":")
@@ -273,7 +289,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         for(i in 1 until splitBoard.size){
             if(i % 3 == 0){
                 var value = splitBoard[i][0].toString()
-                if(!isThisPlayer && (value=="1")){
+                if(!isThisPlayer && value=="1"){ //don't show opponents ships
+                    Log.d(TAG, "FOUND OPPONENT SHIP AT ${toReturn.size-1}")
                     value = "0"
                 }
                 toReturn.add(value)
@@ -287,9 +304,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         return toReturn
     }
 
-    private fun setupBoard (playerBoard: MutableList<String>) {
+    private fun setupBoard (playerBoard: MutableList<String>, whichBoard: Int) {
+        displayedBoard = whichBoard
         gridView = findViewById(R.id.gridview)
-        val adapter = SpaceAdapter(this, playerBoard, player)
+        val adapter = SpaceAdapter(this, playerBoard, player, whichBoard)
         gridView.adapter = adapter
     }
 
@@ -300,11 +318,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         when(state){
             (-1) -> {
                 userTurn.text = "Place Ships:"+ (initialShips -numShips).toString()
+                boardTitle.text = resources.getString(R.string.your_ships)
                 opp_Btn.visibility= View.INVISIBLE
                 my_Btn.visibility= View.INVISIBLE
             }
             0 -> { //placing ships
                 userTurn.text = "Waiting for other player to place ships".toString()
+                boardTitle.text = resources.getString(R.string.your_ships)
                 opp_Btn.visibility= View.INVISIBLE
                 my_Btn.visibility= View.INVISIBLE
             }
@@ -339,16 +359,21 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     }
 
     private fun move(position: Int){
+        var observeMove = true
         serverInteractions.move(gameID, deviceID, (position % 11)-1, (position / 11)-1).observe(
             this,
             Observer { response ->
-                response?.let {
-                    gameRepo.state = response.get("turn").toString().toInt()
-                    playerTwoBoard[position] = response.get("state").toString()
-                    if(response.get("state").toString() == "2"){
-                        gameRepo.alternateTurn(gameID.toString())
+                if(observeMove){
+                    observeMove = false
+                    response?.let {
+                        Log.d(TAG, "MOVE RESPONSE: $response")
+                        gameRepo.state = response.get("turn").toString().toInt()
+                        playerTwoBoard[position] = response.get("state").toString()
+                        if(response.get("state").toString() == "2"){
+                            gameRepo.alternateTurn(gameID.toString())
+                        }
+                        updateGameView(gameRepo.state, 0)
                     }
-                    updateGameView(gameRepo.state, 0)
                 }
             }
         )

@@ -60,21 +60,39 @@ class GameRepository private constructor(var context: Context) {
 
     fun getGame(id: String): LiveData<Game> = gameDao.getGame(id)
 
-    fun updateUserName(id: String, uname: String) = gameDao.updateUserName(id, uname)
-
-    fun updateScore(id: String, player1: Boolean) {
-        if(player1) {
-            gameDao.updateScore(id)
-        } else {
-            gameDao.updateScore2(id)
+    fun updateUserName(id: String, uname: String)  {
+        executor.execute {
+            gameDao.updateUserName(id, uname)
         }
     }
 
-    fun incStatus(id: String) = gameDao.incStatus(id)
+    fun updateScore(id: String, player1: Boolean) {
+        executor.execute {
+            if(player1) {
+                gameDao.updateScore(id)
+            } else {
+                gameDao.updateScore2(id)
+            }
+        }
+    }
 
-    fun alternateTurn(id: String) = gameDao.alternateTurn(id)
+    fun incStatus(id: String)  {
+        executor.execute {
+            gameDao.incStatus(id)
+        }
+    }
 
-    fun finishGame(id: String) = gameDao.finishGame(id)
+    fun alternateTurn(id: String)  {
+        executor.execute {
+            gameDao.alternateTurn(id)
+        }
+    }
+
+    fun finishGame(id: String) {
+        executor.execute {
+            gameDao.finishGame(id)
+        }
+    }
 
     fun updateGame(game: Game) {
         executor.execute {
