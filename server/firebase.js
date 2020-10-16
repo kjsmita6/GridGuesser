@@ -15,11 +15,11 @@ class Firebase {
             }
         }
         admin.messaging().sendToDevice(token, payload, options).then(response => {
-            logger.silly('Successfully sent message: ' + JSON.stringify(response));
+            logger.debug('FIREBASE success: ' + JSON.stringify(response));
             callback(response);
         }).catch(error => {
-            if (error) {
-                logger.error('Error sending message: ' + JSON.stringify(error, null, 4));
+            if (error && JSON.stringify(error) != '{}') {
+                logger.error('FIREBASE failure: ' + JSON.stringify(error));
             }
         });
     }
