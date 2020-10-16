@@ -102,6 +102,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             gameRepo.id = gameID
         }
 
+        gameRepo.remainingShips.value = 0
+
         getWhichPlayer()
 
         var observeState = true
@@ -136,7 +138,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     Log.d(TAG,"#SHIPS WAS CHANGED")
                     if(initialShips == gameRepo.remainingShips.value){ //if this player has finished placing their ships
                         gameRepo.state += 1 //increment state (goes to 0 if other player hasn't finished with their ships, 1 otherwise)
-                        gameRepo.remainingShips.value = -1
+                        gameRepo.remainingShips.value = 0
                         placeShips()
                         observeShips = false
                     }
