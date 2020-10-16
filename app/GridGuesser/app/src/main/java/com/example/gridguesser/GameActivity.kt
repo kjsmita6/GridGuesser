@@ -375,11 +375,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         Log.d(TAG, "MOVE RESPONSE: $response")
                         gameRepo.state = response.get("turn").toString().toInt()
                         playerTwoBoard[position] = response.get("state").toString()
-                        if(response.get("state").toString() == "2"){
-                            gameRepo.alternateTurn(gameID.toString())
-                        } else {
+                        if(response.get("state").toString() == "3"){
                             gameRepo.updateScore(gameID.toString(), true)
                         }
+                        gameRepo.alternateTurn(gameID.toString())
                         updateGameView(gameRepo.state, 0)
                         if(displayedBoard == 2){
                             setupBoard(playerTwoBoard, 2)

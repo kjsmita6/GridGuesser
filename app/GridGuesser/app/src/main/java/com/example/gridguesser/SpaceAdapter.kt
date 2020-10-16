@@ -78,8 +78,8 @@ class SpaceAdapter (
                 if (gameRepo.state == 0 || gameRepo.state == -1) {
                     Log.d(TAG, "state 0")
                     squares[position] = "1"
-                    gameRepo.remainingShips.value = gameRepo.remainingShips.value?.plus(1)
                     callbacks?.assignShip(position)
+                    gameRepo.remainingShips.value = gameRepo.remainingShips.value?.plus(1)
                     notifyDataSetChanged()
                 }
                 else if (gameRepo.state == player && whichBoard == 2){
