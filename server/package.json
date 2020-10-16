@@ -11,8 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "mysql": "^2.18.1",
-    "request": "^2.88.2",
+    "express-winston": "^4.0.5",
+    "firebase-admin": "^9.2.0",
+    "sprintf-js": "^1.1.2",
     "sqlite3": "^5.0.0",
     "winston": "^3.3.3"
   }
