@@ -103,10 +103,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         gameRepo.getGame(gameID.toString()).observe(
             this,
             Observer { thisGame ->
-                gameRepo.state = thisGame.status
-                Log.d(TAG, "INITIAL STATUS: ${gameRepo.state}")
-                updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
-                setupBoard(playerOneBoard)
+                    gameRepo.state = thisGame.status
+                    Log.d(TAG, "INITIAL STATUS: ${gameRepo.state}")
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                    setupBoard(playerOneBoard)
+                    gameRepo.getGame(gameID.toString()).removeObservers(this)
             }
         )
 
@@ -134,6 +135,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         gameRepo.state += 1 //increment state (goes to 0 if other player hasn't finished with their ships, 1 otherwise)
                         gameRepo.remainingShips.value = -1
                         placeShips()
+                        gameRepo.remainingShips.removeObservers(this)
                     }
                     updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
 
@@ -199,6 +201,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     Log.d(TAG, "player is $player")
                 }
                 loadBoards()
+                serverInteractions.whichPlayer(deviceID, gameID).removeObservers(this)
             }
         )
     }
@@ -234,6 +237,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 response?.let {
                     Log.d(TAG,"SENT BOARD: $response")
                 }
+                serverInteractions.makeBoard(gameID, deviceID, board).removeObservers(this)
             })
         gameRepo.incStatus(gameID.toString())
     }
@@ -254,6 +258,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         playerOneBoard = parseBoard(response.get("player2_board").toString(), true)
                     }
                 }
+                serverInteractions.getBoards(gameID).removeObservers(this)
             }
         )
     }
@@ -342,6 +347,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                         gameRepo.alternateTurn(gameID.toString())
                     }
                     updateGameView(gameRepo.state, 0)
+                    serverInteractions.move(gameID, deviceID, (position % 11)-1, (position / 11)-1).removeObservers(this)
                 }
             }
         )
