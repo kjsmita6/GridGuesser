@@ -39,7 +39,7 @@
         android:layout_margin="10dp"
         android:layout_marginBottom="200dp"
         android:layout_weight="1"
-        android:background="@drawable/main_menu_button"
+        android:background="@drawable/button_primary"
         android:text="@string/main_menu"
         android:textAlignment="center"
         android:textColor="#FFFFFF"

@@ -83,6 +83,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     override fun assignShip(position: Int) {
         playerOneBoard[position] = "1"
+        Log.d(TAG, "PLAYER ONE SET $position")
     }
 
 
@@ -101,6 +102,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         } else {
             gameRepo.id = gameID
         }
+
+        gameRepo.remainingShips.value = 0
 
         getWhichPlayer()
 
@@ -136,7 +139,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                     Log.d(TAG,"#SHIPS WAS CHANGED")
                     if(initialShips == gameRepo.remainingShips.value){ //if this player has finished placing their ships
                         gameRepo.state += 1 //increment state (goes to 0 if other player hasn't finished with their ships, 1 otherwise)
-                        gameRepo.remainingShips.value = -1
+                        gameRepo.remainingShips.value = 0
                         placeShips()
                         observeShips = false
                     }
@@ -398,7 +401,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     private fun move(position: Int){
         var observeMove = true
-        serverInteractions.move(gameID, deviceID, (position % 11)-1, (position / 11)-1).observe(
+        serverInteractions.move(gameID, deviceID, (position / 11)-1, (position % 11)-1).observe(
             this,
             Observer { response ->
                 if(observeMove){
@@ -411,6 +414,9 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                             gameRepo.alternateTurn(gameID.toString())
                         }
                         updateGameView(gameRepo.state, 0)
+                        if(displayedBoard == 2){
+                            setupBoard(playerTwoBoard, 2)
+                        }
                     }
                 }
             }
@@ -426,10 +432,10 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         val light = event.values[0]
 
         if (light < 20 && settings.use_daylight) {
-            bg.rootView.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
+            bg.rootView.setBackgroundColor(resources.getColor(R.color.colorPrimary))
         }
         else {
-            bg.rootView.setBackgroundColor(resources.getColor(android.R.color.white))
+            bg.rootView.setBackgroundColor(resources.getColor(R.color.colorSecondary))
         }
     }
 

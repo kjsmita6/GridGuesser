@@ -74,6 +74,8 @@ class MessagingService: FirebaseMessagingService() {
                 val state = data["state"]
                 if(id != null && state != null && state == "3"){
                     gameRepo.updateScore(id, false)
+                }
+                if (id != null) {
                     gameRepo.alternateTurn(id)
                 }
             }

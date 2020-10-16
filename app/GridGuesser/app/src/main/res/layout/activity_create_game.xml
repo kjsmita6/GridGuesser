@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateGameActivity">
+    tools:context=".CreateGameActivity"
+    android:background="@color/colorSecondary">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,11 +16,12 @@
 
         <Button
             android:id="@+id/create_game"
-            android:layout_width="wrap_content"
+            style="@style/button"
+            android:layout_width="156dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/create_game"
-            android:textSize="20sp" />
+            android:background="@drawable/button_primary"
+            android:text="@string/create_game" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -34,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:paddingRight="35dp"
                 android:text="@string/code"
-                android:textSize="20sp" />
+                style="@style/header2" />
 
             <EditText
                 android:id="@+id/code_field"
@@ -52,7 +54,7 @@
             android:layout_gravity="center"
             android:text="@string/waiting_text"
             android:textAlignment="center"
-            android:textSize="20sp"
+            style="@style/header2"
             android:visibility="invisible" />
     </LinearLayout>
 

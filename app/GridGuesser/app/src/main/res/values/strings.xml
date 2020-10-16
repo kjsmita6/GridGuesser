@@ -32,5 +32,6 @@
     <string name="cruiser_3_spaces">Cruiser- 3 Spaces</string>
     <string name="submarine_3_spaces">Submarine - 3 Spaces</string>
     <string name="destroyer_2_spaces">Destroyer - 2 Spaces</string>
+    <string name="options">Options</string>
 
 </resources>

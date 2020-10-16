@@ -13,6 +13,6 @@
         android:top="3dp"
         android:bottom="3dp"/>
 
-    <solid android:color="@color/colorDeepBlue"/>
+    <solid android:color="@color/colorPrimaryDark"/>
 
 </shape>
