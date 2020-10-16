@@ -8,7 +8,7 @@ import androidx.room.Update
 
 @Dao
 interface GameDao {
-    @Query("SELECT * FROM active_games")
+    @Query("SELECT * FROM active_games ORDER BY hasChanged DESC, title ASC")
     fun getGames(): LiveData<List<Game>>
 
     @Query("SELECT * FROM active_games WHERE game_id = :id")
@@ -34,6 +34,9 @@ interface GameDao {
 
     @Query("Update active_games SET status = 2-(status - 1) WHERE game_id = :id")
     fun alternateTurn(id: String)
+
+    @Query("Update active_games SET hasChanged = :change WHERE game_id = :id")
+    fun gameChange(id: String, change: Int)
 
     @Insert
     fun addGame(game: Game)

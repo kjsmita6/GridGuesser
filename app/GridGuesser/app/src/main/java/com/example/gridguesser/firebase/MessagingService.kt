@@ -91,6 +91,7 @@ class MessagingService: FirebaseMessagingService() {
         data["event"]?.let {
             if (id != null) {
                 gameRepo.updateEvent(it, id)
+                gameRepo.notifyChange(id, true)
             }
         }
     }

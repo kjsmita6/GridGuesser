@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -51,6 +52,7 @@ class GameListFragment : Fragment() {
         val teamAPTS: TextView = itemView.findViewById(R.id.team_a_pts)
         val teamBTitle: TextView = itemView.findViewById(R.id.team_b)
         val teamBPTS: TextView = itemView.findViewById(R.id.team_b_pts)
+        val gameChangeIndicator: ImageView = itemView.findViewById(R.id.game_change_indicator)
         var thisGame: Game? = null;
 
         init {
@@ -81,6 +83,9 @@ class GameListFragment : Fragment() {
                 teamBTitle.text = game.blue_team
                 teamBPTS.text = "${game.blue_hits}"
                 thisGame = game
+                if(game.hasChanged == 0){
+                    gameChangeIndicator.visibility = View.INVISIBLE
+                }
             }
         }
     }

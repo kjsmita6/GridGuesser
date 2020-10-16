@@ -82,6 +82,16 @@ class GameRepository private constructor(var context: Context) {
         }
     }
 
+    fun notifyChange(id: String, notify: Boolean)  {
+        executor.execute {
+            if(notify){
+                gameDao.gameChange(id, 1)
+            } else {
+                gameDao.gameChange(id, 0)
+            }
+        }
+    }
+
     fun alternateTurn(id: String)  {
         executor.execute {
             gameDao.alternateTurn(id)
