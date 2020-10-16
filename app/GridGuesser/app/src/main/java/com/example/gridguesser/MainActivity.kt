@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun settings(){
-        val intent = Intent(this@MainActivity, OptionsActivity::class.java)
+        val intent = OptionsActivity.newIntent(this@MainActivity)
         startActivity(intent)
     }
 

@@ -1,5 +1,7 @@
 package com.example.gridguesser
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,6 +18,7 @@ import com.example.gridguesser.deviceID.DeviceID
 private const val TAG = "GridGuesser"
 
 class OptionsActivity : AppCompatActivity() {
+    private lateinit var backBtn: Button
     private val gamerepo = GameRepository.get()
     private val settings = gamerepo.currentSettings
 
@@ -46,8 +49,9 @@ class OptionsActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
 
-        findViewById<Button>(R.id.go_home).setOnClickListener {
-            val intent = MainActivity.newIntent(this)
+        backBtn = findViewById(R.id.backToMain)
+        backBtn.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }
@@ -58,5 +62,11 @@ class OptionsActivity : AppCompatActivity() {
             settings.username = DeviceID.getDeviceID(this.contentResolver).substring(0, 5)
         }
         gamerepo.updateSettings(settings)
+    }
+
+    companion object {
+        fun newIntent(packageContext: Context): Intent {
+            return Intent(packageContext, OptionsActivity::class.java)
+        }
     }
 }

@@ -31,7 +31,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     private lateinit var userTurn: TextView
     private lateinit var boardTitle: TextView
     private lateinit var sensorManager: SensorManager
-    private var pressure: Sensor? = null
+    private var light: Sensor? = null
+    private var temp: Sensor? = null
     private lateinit var bg: View
     private lateinit var settings: Settings
 
@@ -161,8 +162,11 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         }
 
         bg = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.gameBackground)
+        bg.rootView.setBackgroundColor(resources.getColor(R.color.colorSecondary))
+
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        pressure = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+        light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+        temp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
 
         help.setOnClickListener {
             val intent = Intent(this, RulesActivity::class.java)
@@ -197,7 +201,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
                 }
             }
         )
-
     }
 
     private fun getWhichPlayer(){
@@ -290,7 +293,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
         )
     }
-
 
     //change server board style to be the gridview style
     private fun parseBoard(board: String, isThisPlayer: Boolean): MutableList<String>{
@@ -461,7 +463,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
         val light = event.values[0]
 
         if (light < 20 && settings.use_daylight) {
-            bg.rootView.setBackgroundColor(resources.getColor(R.color.colorPrimary))
+            bg.rootView.setBackgroundColor(resources.getColor(R.color.colorAccent))
+            bg.rootView
         }
         else {
             bg.rootView.setBackgroundColor(resources.getColor(R.color.colorSecondary))
@@ -470,11 +473,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
     override fun onResume() {
         super.onResume()
-        sensorManager.registerListener(this, pressure, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     override fun onPause() {
         super.onPause()
+        sensorManager.unregisterListener(this)
         sensorManager.unregisterListener(this)
     }
 
