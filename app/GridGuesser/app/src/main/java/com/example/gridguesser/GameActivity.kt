@@ -44,7 +44,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     private val gameRepo = GameRepository.get()
     private val serverInteractions = ServerInteractions.get()
     private lateinit var deviceID: String
-    //private var isPlayerOne = true
 
     private var playerOneBoard = mutableListOf(
         " ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
@@ -100,14 +99,17 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
         getWhichPlayer()
 
+        var observeState = true
         gameRepo.getGame(gameID.toString()).observe(
             this,
             Observer { thisGame ->
-                gameRepo.state = thisGame.status
-                Log.d(TAG, "INITIAL STATUS: ${gameRepo.state}")
-                updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
-                setupBoard(playerOneBoard, 1)
-                gameRepo.getGame(gameID.toString()).removeObservers(this)
+                if(observeState){
+                    observeState = false;
+                    gameRepo.state = thisGame.status
+                    Log.d(TAG, "INITIAL STATUS: ${gameRepo.state}")
+                    updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
+                    setupBoard(playerOneBoard, 1)
+                }
             }
         )
 
@@ -120,21 +122,23 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
 
         updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
 
-            gameRepo.remainingShips.observe(
-            this,
-            Observer { ships ->
-                ships?.let {
+        var observeShips = true
+        gameRepo.remainingShips.observe(
+        this,
+        Observer { ships ->
+            ships?.let {
+                if (observeShips){
                     Log.d(TAG,"#SHIPS WAS CHANGED")
                     if(initialShips == gameRepo.remainingShips.value){ //if this player has finished placing their ships
                         gameRepo.state += 1 //increment state (goes to 0 if other player hasn't finished with their ships, 1 otherwise)
                         gameRepo.remainingShips.value = -1
                         placeShips()
-                        gameRepo.remainingShips.removeObservers(this)
+                        observeShips = false
                     }
                     updateGameView(gameRepo.state, gameRepo.remainingShips.value!!)
-
                 }
-            })
+            }
+        })
 
         opp_Btn.setOnClickListener {
             setupBoard(playerTwoBoard, 2)
@@ -184,18 +188,21 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     }
 
     private fun getWhichPlayer(){
+        var observePlayer = true
         serverInteractions.whichPlayer(deviceID, gameID).observe(
             this,
             Observer { response ->
-                response?.let {
-                    if(response.get("player").toString() == "1")
-                        player = 1
-                    else if(response.get("player").toString() == "2")
-                        player = 2
-                    Log.d(TAG, "player is $player")
+                if(observePlayer){
+                    observePlayer = false
+                    response?.let {
+                        if(response.get("player").toString() == "1")
+                            player = 1
+                        else if(response.get("player").toString() == "2")
+                            player = 2
+                        Log.d(TAG, "player is $player")
+                    }
+                    loadBoards()
                 }
-                loadBoards()
-                serverInteractions.whichPlayer(deviceID, gameID).removeObservers(this)
             }
         )
     }
@@ -225,34 +232,41 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
             }
         }
         board += "]"
+
+        var observeBoard = true
         serverInteractions.makeBoard(gameID, deviceID, board).observe(
             this,
             Observer { response ->
-                response?.let {
-                    Log.d(TAG,"SENT BOARD: $response")
+                if(observeBoard){
+                    observeBoard = false
+                    response?.let {
+                        Log.d(TAG,"SENT BOARD: $response")
+                    }
                 }
-                serverInteractions.makeBoard(gameID, deviceID, board).removeObservers(this)
             })
         gameRepo.incStatus(gameID.toString())
     }
 
     private fun loadBoards(){
+        var observeLoad = true
         serverInteractions.getBoards(gameID).observe(
             this,
             Observer {response ->
-                response?.let {
-                    Log.d(TAG, "LOADING: $response")
-                    gameRepo.state = response.get("turn").toString().toInt()
+                if(observeLoad){
+                    observeLoad = false;
+                    response?.let {
+                        Log.d(TAG, "LOADING: $response")
+                        gameRepo.state = response.get("turn").toString().toInt()
 
-                    if(response.get("player1").toString() == deviceID){
-                        playerOneBoard = parseBoard(response.get("player1_board").toString(), true)
-                        playerTwoBoard = parseBoard(response.get("player2_board").toString(), false)
-                    } else {
-                        playerTwoBoard = parseBoard(response.get("player1_board").toString(), false)
-                        playerOneBoard = parseBoard(response.get("player2_board").toString(), true)
+                        if(response.get("player1").toString() == deviceID){
+                            playerOneBoard = parseBoard(response.get("player1_board").toString(), true)
+                            playerTwoBoard = parseBoard(response.get("player2_board").toString(), false)
+                        } else {
+                            playerTwoBoard = parseBoard(response.get("player1_board").toString(), false)
+                            playerOneBoard = parseBoard(response.get("player2_board").toString(), true)
+                        }
                     }
                 }
-                serverInteractions.getBoards(gameID).removeObservers(this)
             }
         )
     }
@@ -345,18 +359,21 @@ class GameActivity : AppCompatActivity(), SensorEventListener, SpaceAdapter.Call
     }
 
     private fun move(position: Int){
+        var observeMove = true
         serverInteractions.move(gameID, deviceID, (position % 11)-1, (position / 11)-1).observe(
             this,
             Observer { response ->
-                response?.let {
-                    Log.d(TAG, "MOVE RESPONSE: $response")
-                    gameRepo.state = response.get("turn").toString().toInt()
-                    playerTwoBoard[position] = response.get("state").toString()
-                    if(response.get("state").toString() == "2"){
-                        gameRepo.alternateTurn(gameID.toString())
+                if(observeMove){
+                    observeMove = false
+                    response?.let {
+                        Log.d(TAG, "MOVE RESPONSE: $response")
+                        gameRepo.state = response.get("turn").toString().toInt()
+                        playerTwoBoard[position] = response.get("state").toString()
+                        if(response.get("state").toString() == "2"){
+                            gameRepo.alternateTurn(gameID.toString())
+                        }
+                        updateGameView(gameRepo.state, 0)
                     }
-                    updateGameView(gameRepo.state, 0)
-                    serverInteractions.move(gameID, deviceID, (position % 11)-1, (position / 11)-1).removeObservers(this)
                 }
             }
         )
